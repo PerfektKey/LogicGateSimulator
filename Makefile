@@ -5,7 +5,7 @@ BIN=bin
 FLAGS=
 INCLUDES = -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
 
-all:main.exe clean run
+all:main.exe clean
 
 main.exe:main.o logic-Gate.o logic-operandi.o
 	$(CC) $(FLAGS) *.o -o $(BIN)/main.exe $(INCLUDES)
