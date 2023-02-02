@@ -8,4 +8,4 @@ int main(){
     std::cout << "HELLO\n";
 
     return 1;
-hng}
+}
