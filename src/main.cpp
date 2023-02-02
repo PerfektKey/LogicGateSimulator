@@ -1,11 +1,10 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
+#include "header/Logic-Gate.h"
+#include "header/logic-operandi.h"
+
 int main(){
-    std::cout << "HELLO\n";
-    std::cout << "HELLO\n";
-    std::cout << "HELLO\n";
-    std::cout << "HELLO\n";
 
     return 1;
 }
