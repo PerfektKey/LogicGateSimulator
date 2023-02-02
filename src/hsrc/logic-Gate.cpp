@@ -98,3 +98,13 @@ void LogicGate::printState(){
     }
     std::cout << "\n------------------------------------------------------\n";
 }
+
+
+LogicGate JsonToGate(fs::path p){
+    std::ifstream file(p);
+
+    Json::Reader reader;
+    Json::Value value;
+
+    reader.parse(file,value);
+}

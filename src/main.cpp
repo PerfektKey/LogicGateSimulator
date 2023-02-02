@@ -4,7 +4,8 @@
 #include "header/Logic-Gate.h"
 #include "header/logic-operandi.h"
 
-int main(){
 
+int main(){
+    //printf()
     return 1;
 }

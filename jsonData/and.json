@@ -1,0 +1,34 @@
+{
+    "name" : "and",
+    "LOP" : [
+        {
+            "uniqueID" : "0-and-and-0",
+            "type" : "and"
+        },
+        {
+            "uniqueID" : "0-and-input-0",
+            "type" : "PIN",
+            "direction" : "input"
+        },
+        {
+            "uniqueID" : "0-and-input-1",
+            "type" : "PIN",
+            "direction" : "input"
+        },
+        {
+            "uniqueID" : "0-and-output-0",
+            "type" : "PIN",
+            "direction" : "input"
+        }
+    ],
+    "connections" : [
+        {
+            "uniqueID" : "0-and-and-0",
+            "connects" : ["0-and-input-0","0-and-input-1"]
+        },
+        {
+            "uniqueID" : "0-and-output-0",
+            "connects" : ["0-and-and-0"]
+        }
+    ]
+}

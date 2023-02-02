@@ -5,6 +5,11 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <fstream>
+#include <filesystem>
+namespace fs = std::filesystem;
+#include <json/json.h>
+#include <json/value.h>
 
 class LogicGate{
 private:
@@ -34,5 +39,7 @@ public:
     void connectIO(std::string,std::string);
     void connectIO(logicOperandi&,logicOperandi&);
 };
+
+LogicGate JsonToGate(fs::path);
 
 #endif
