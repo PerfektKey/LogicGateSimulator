@@ -4,6 +4,19 @@ std::ostream& operator<<(std::ostream& stream,const STATE& other){
     stream << ((other== STATE::HIGH) ? 1 : 0);
     return stream;
 }
+std::ostream& operator<<(std::ostream& stream,const LOGIC_TYPE& other){
+    if (other == LOGIC_TYPE::AND)
+        stream << "and type";
+    if (other == LOGIC_TYPE::NOT)
+        stream << "not type";
+    if (other == LOGIC_TYPE::CTR)
+        stream << "controll type";
+    if (other == LOGIC_TYPE::PIN)
+        stream << "pin type";
+    if (other == LOGIC_TYPE::ANY)
+        stream << "any type";
+    return stream;
+}
 
 STATE LogicalAND(STATE a, STATE b){
     return (a == STATE::FLOATING || b == STATE::FLOATING) ? STATE::FLOATING : (a == STATE::HIGH && b == STATE::HIGH) ? STATE::HIGH : STATE::LOW;
@@ -38,9 +51,12 @@ logicOperandi::logicOperandi(const logicOperandi& other){
     evaluation_cycle = 0;
 }
 
+
 logicOperandi::~logicOperandi(){
-    inputs = std::vector<logicOperandi*>();
+    //std::cout << "destroy: " << this << " -> " << uid << "\n";
+    //inputs = std::vector<logicOperandi*>();
 }
+
 /*
 logicOperandi::logicOperandi(logicOperandi&& other){
     std::cout << "Moved: " << other.uid << "\n";

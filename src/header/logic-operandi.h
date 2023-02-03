@@ -12,8 +12,6 @@ enum class STATE{
     FLOATING
 };
 
-std::ostream& operator<<(std::ostream&,const STATE&);
-
 enum class LOGIC_TYPE {
     AND = 0,
     NOT,
@@ -21,6 +19,9 @@ enum class LOGIC_TYPE {
     ANY,
     CTR
 };
+
+std::ostream& operator<<(std::ostream&,const STATE&);
+std::ostream& operator<<(std::ostream&,const LOGIC_TYPE&);
 
 struct logicOperandi{
     std::string name;
@@ -31,12 +32,12 @@ struct logicOperandi{
     std::vector<logicOperandi*> inputs;
 
     unsigned int evaluation_cycle;
-
+public:
+    ~logicOperandi();
     logicOperandi(std::string,LOGIC_TYPE,STATE);
     logicOperandi(std::string,LOGIC_TYPE);
     logicOperandi();
     logicOperandi(const logicOperandi&);
-    ~logicOperandi();
 
 
     //logicOperandi(logicOperandi&&);

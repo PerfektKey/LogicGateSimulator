@@ -6,7 +6,9 @@ LogicGate::LogicGate(){
     pins["output"] = std::map<std::string,logicOperandi>();
     name = "";
 }
-
+LogicGate::~LogicGate(){
+    std::cout << "destroy: " << this << " -> " << name << "\n";
+}
 /*
 LogicGate::LogicGate(LogicGate&& other){
     logics = other.logics;
@@ -55,18 +57,46 @@ std::map<std::string,logicOperandi>& LogicGate::getOutputs(){
     return pins["output"];
 }
 
+std::map<std::string,logicOperandi*>& LogicGate::getOInputs(){
+    return outsideInputs;
+}
 
 void LogicGate::connectIO(std::string to,std::string from){//conect by searching for the LOP in the maps
-
+    getLOP(to)->inputs.push_back(getLOP(from));
 }
 void LogicGate::connectIO(logicOperandi& to,logicOperandi& from){//conect by reference from two LOP's
     to.inputs.push_back(&from);
+}
+
+void LogicGate::connectGatesIO(LogicGate& parent,logicOperandi& to,logicOperandi& from){
+    to.inputs.push_back(&from);
+    for (auto&[uid,pin] : pins["input"]){
+        //pin.type = LOGIC_TYPE::ANY;
+
+    }
+    std::cout << to.uid << "connects to:\n";
+    for (logicOperandi* lop : to.inputs){
+        std::cout << lop->uid << "\n";
+    }
+    if (parent.getOInputs().size() == 0){
+        for(auto&[uid,pin] : parent.getInputs()){
+            outsideInputs[uid] = &pin;
+            //std::cout << uid << "\n";
+        }
+    }else{
+        for(auto&[uid,pin] : parent.getOInputs()){
+
+            outsideInputs[uid] = pin;
+            //std::cout << uid << "\n";
+        } 
+    }
 }
 
 void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
     if (LOP.evaluation_cycle == current_cycle)
         return;
     LOP.evaluation_cycle = current_cycle;
+    //std::cout << "evaluate from: " << LOP.uid << " = " << LOP.type << "\n";
     switch (LOP.type)
     {
     case LOGIC_TYPE::AND://if both inputs are HIGH output HIGH
@@ -77,12 +107,33 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
         LOP.output = LogicalAND(LOP.inputs.at(0)->output, LOP.inputs.at(1)->output);
         break;
     case LOGIC_TYPE::NOT://if input is HIGH output LOW (REVERSE the input)
+        //std::cout << "NOTS: " << LOP.inputs.size() << "\n";
+        /*for (logicOperandi* lop : LOP.inputs){
+            std::cout << lop->uid << "\n";
+        }*/
         if (LOP.inputs.size() != 1)
             break;
         evaluate(*LOP.inputs.at(0), current_cycle);
         LOP.output = LogicalNOT(LOP.inputs.at(0)->output);
         break;
     case LOGIC_TYPE::PIN://if any input is HIGH the LOP's output is HIGH
+        //std::cout << "evaluate from pinA\n";
+        if (LOP.inputs.size() == 0)
+            break;
+        //std::cout << "evaluate from pinB\n";
+        LOP.output = STATE::LOW;
+        //evaluate(*LOP.inputs, current_cycle);
+        for (const logicOperandi* lop : LOP.inputs){
+            //std::cout << "evaluate from pinC: " << lop->uid << "\n";
+            evaluate((logicOperandi&)(*lop), current_cycle);
+            //std::cout << "evaluate from pinD\n";
+            if (lop->output == STATE::HIGH){
+                LOP.output = STATE::HIGH;
+                break;
+            }
+        }
+        break;
+    case LOGIC_TYPE::ANY:
         if (LOP.inputs.size() == 0)
             break;
         for (const logicOperandi* lop : LOP.inputs){
@@ -101,10 +152,72 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
     }
 }
 
+void LogicGate::simulateOWN(unsigned int& cycle,bool status_update){
+    cycle = 1;
+    for (auto&[uid,pin] : pins["input"]){
+        pin.output = STATE::LOW;
+    }
+    
+        simulate(cycle);
+    if (status_update)
+        printState(false);
+    cycle++;
+    if (pins["input"].size() > 1){
+        for (auto&[uid,pin] : pins["input"]){
+            pin.output = STATE::HIGH;
+        }
+    }
+    for (unsigned int i = 0;i < pins["input"].size();i++)//unsigned int j = 0;j < pins["input"].size();j++
+    for (auto&[uid,pin] : pins["input"]){
+        pin.output = LogicalNOT(pin.output);
+        simulate(cycle);
+        if (status_update && (cycle != pins["input"].size()+1 || pins["input"].size() == 1))
+            printState(false);
+        cycle++;
+    }
+}
+void LogicGate::simulateOWNR(unsigned int& cycle,bool status_update){
+    cycle = 1;
+    for (auto&[uid,pin] : outsideInputs){
+        pin->output = STATE::LOW;
+    }
+    
+        simulateR(cycle);
+    if (status_update)
+        printStateR(false);
+    cycle++;
+    if (outsideInputs.size() > 1){
+        for (auto&[uid,pin] : outsideInputs){
+            pin->output = STATE::HIGH;
+        }
+    }
+    for (unsigned int i = 0;i < outsideInputs.size();i++)//unsigned int j = 0;j < pins["input"].size();j++
+    for (auto&[uid,pin] : outsideInputs){
+        pin->output = LogicalNOT(pin->output);
+        simulateR(cycle);
+        if (status_update && (cycle != outsideInputs.size()+1 || outsideInputs.size() == 1))
+            printStateR(false);
+        cycle++;
+    }
+}
 void LogicGate::simulate(unsigned int current_cycle){
-    for (auto&[uid,LOP] : logics){
+    /*for (auto&[uid, LOP] : pins["input"]){
         evaluate(LOP, current_cycle);
     }
+    for (auto&[uid,LOP] : logics){
+        evaluate(LOP, current_cycle);
+    }*/
+    for (auto&[uid, LOP] : pins["output"]){
+        evaluate(LOP, current_cycle);
+    }
+}
+void LogicGate::simulateR(unsigned int current_cycle){
+    /*for (auto&[uid, LOP] : outsideInputs){
+        evaluate(*LOP, current_cycle);
+    }
+    for (auto&[uid,LOP] : logics){
+        evaluate(LOP, current_cycle);
+    }*/
     for (auto&[uid, LOP] : pins["output"]){
         evaluate(LOP, current_cycle);
     }
@@ -125,8 +238,8 @@ logicOperandi* LogicGate::getLOP(std::string uid){
     return nullptr;
 }
 
-void LogicGate::printState(){
-    std::cout << "\n=########################################=\n" << name;
+void LogicGate::printState(bool seperator){
+    if (seperator)std::cout << "\n=########################################=\ngate name:" << name << "\n";
     for (auto&[uid, LOP] : pins["input"]){
         std::cout << LOP.output << " ";
     }
@@ -134,7 +247,20 @@ void LogicGate::printState(){
     for (auto&[uid, LOP] : pins["output"]){
         std::cout << LOP.output << " ";
     }
-    std::cout << "\n=########################################=\n";
+    std::cout << "\n";
+    if (seperator)std::cout << "=########################################=\n";
+}
+void LogicGate::printStateR(bool seperator){
+    if (seperator)std::cout << "\n=########################################=\ngate name:" << name << "\n";
+    for (auto&[uid, LOP] : outsideInputs){
+        std::cout << LOP->output << " ";
+    }
+    std::cout << " | ";
+    for (auto&[uid, LOP] : pins["output"]){
+        std::cout << LOP.output << " ";
+    }
+    std::cout << "\n";
+    if (seperator)std::cout << "=########################################=\n";
 }
 void LogicGate::printInfo(){
     std::cout << "\n=########################################=\ngate name: " << name << "\n";
@@ -161,7 +287,7 @@ void LogicGate::clear(){
     pins = std::map<std::string,std::map<std::string,logicOperandi>>();
 }
 
-void JsonToGate(fs::path p, LogicGate& gate){
+void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
     std::ifstream file(p);
 
     Json::Reader reader;
@@ -169,21 +295,26 @@ void JsonToGate(fs::path p, LogicGate& gate){
 
     reader.parse(file,value);
 
-    gate.clear();
+    //gate.clear();
 
     gate.setName(value["name"].asString());
 
     Json::Value LOP = value["LOP"];
     Json::Value CON = value["CON"];
 
+    std::map<std::string,std::string> Newuid;
+
     for (unsigned int i = 0;i < LOP.size();i++){
         std::string type = LOP[i]["type"].asString();
         std::string name = LOP[i]["name"].asString();
         std::string uid = LOP[i]["uniqueID"].asString();
 
+        Newuid[uid] = uid+Auid;
 
+        uid += Auid;
+        //std::cout << uid << "\n";
 
-        std::cout << uid << "\n";
+        //std::cout << uid << "\n";
 
         if (type == "PIN"){
             if (LOP[i]["direction"].asString() == "input")
@@ -200,11 +331,12 @@ void JsonToGate(fs::path p, LogicGate& gate){
     }
     //return;
     for (unsigned int i = 0;i < CON.size();i++){
-        logicOperandi* to = gate.getLOP(CON[i]["uniqueID"].asString());
+        logicOperandi* to = gate.getLOP(Newuid.at(CON[i]["uniqueID"].asString()));
         if (to == nullptr)
             return;
-        for (unsigned int j = 0;j < CON[i]["connects"].size();j++){
-            logicOperandi* from = gate.getLOP(CON[i]["connects"][j].asString());
+        for (unsigned int j = 0;j < CON[i]["connects"].size();j++){//Newuid.at()
+            logicOperandi* from = gate.getLOP(Newuid.at(CON[i]["connects"][j].asString()));
+            //std::cout << Newuid.at(CON[i]["connects"][j].asString()) << "\n";
             if (from == nullptr)
                 return;
             to->inputs.push_back(from);
@@ -213,3 +345,4 @@ void JsonToGate(fs::path p, LogicGate& gate){
     }
 
 }
+//gate to json

@@ -61,3 +61,17 @@ void nandTest(){
 
     system("pause");
 }
+
+
+void test2(){
+    std::string path;
+    do {
+        std::cout << "give path to gate(json) or type ':q' to quit:\n";
+        std::cin >> path;
+        std::cout << path << "\n";
+        LogicGate gate;
+        JsonToGate(path,gate,"0");
+        unsigned int i;
+        gate.simulateOWN(i,true);
+    }while(path != ":q");
+}

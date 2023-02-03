@@ -16,9 +16,12 @@ private:
     std::map<std::string,logicOperandi> logics;
     std::map<std::string,std::map<std::string,logicOperandi>> pins;
 
+    std::map<std::string,logicOperandi*> outsideInputs;
+
     std::string name;
 public:
     LogicGate();//constructor
+    ~LogicGate();
     //LogicGate(const LogicGate&);//copy constructor
     //LogicGate(LogicGate&&);//move constructor
 
@@ -26,11 +29,14 @@ public:
 
     void evaluate(logicOperandi&,unsigned int);
     void simulate(unsigned int);
+    void simulateR(unsigned int);
+    void simulateOWN(unsigned int&,bool);
+    void simulateOWNR(unsigned int&,bool);
 
-    void printState();
+    void printState(bool=true);
+    void printStateR(bool=true);
     void printInfo();
 
-    void addLogicOP(LOGIC_TYPE);
     void addLogicOP(LOGIC_TYPE,std::string);
     void addLogicOP(logicOperandi);
 
@@ -45,13 +51,17 @@ public:
     void addInputPin(std::string,std::string);
     std::map<std::string,logicOperandi>& getInputs();
 
+    std::map<std::string,logicOperandi*>& getOInputs();
+
     void connectIO(std::string,std::string);
     void connectIO(logicOperandi&,logicOperandi&);
+
+    void connectGatesIO(LogicGate&,logicOperandi&,logicOperandi&);
 
     void setName(std::string);
     std::string getName();
 };
 
-void JsonToGate(fs::path,LogicGate&);
+void JsonToGate(fs::path,LogicGate&,std::string);
 
 #endif
