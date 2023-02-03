@@ -2,7 +2,7 @@ CC=g++
 SRC=src
 BIN=bin
 
-FLAGS=
+FLAGS= -Wall
 INCLUDES = -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
 
 all:main.exe clean run

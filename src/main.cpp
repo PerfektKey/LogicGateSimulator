@@ -6,6 +6,14 @@
 
 
 int main(){
-    //printf()
+    fs::path p = fs::current_path();
+    p += "\\jsonData\\and.json";
+    std::cout << p << "\n";
+    system("pause");
+    LogicGate gate;
+    JsonToGate(p,gate);
+    gate.printInfo();
+    system("pause");
+
     return 1;
 }

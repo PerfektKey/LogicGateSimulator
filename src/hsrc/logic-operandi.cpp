@@ -17,19 +17,49 @@ logicOperandi::logicOperandi(std::string UID,LOGIC_TYPE TYPE,STATE OUTPUT){
     type = TYPE;
     output = OUTPUT;
     evaluation_cycle = 0;
+    name = "";
 }
 logicOperandi::logicOperandi(std::string UID,LOGIC_TYPE TYPE){
     uid = UID;
     type = TYPE;
     output = STATE::LOW;
     evaluation_cycle = 0;
+    name = "";
 }
 logicOperandi::logicOperandi(){
     evaluation_cycle = 0;
+    name = "";
 }
 logicOperandi::logicOperandi(const logicOperandi& other){
     uid = other.uid;
     type = other.type;
+    name = other.name;
 
     evaluation_cycle = 0;
 }
+
+logicOperandi::~logicOperandi(){
+    inputs = std::vector<logicOperandi*>();
+}
+/*
+logicOperandi::logicOperandi(logicOperandi&& other){
+    std::cout << "Moved: " << other.uid << "\n";
+    name = other.name;
+    uid = other.uid;
+    type = other.type;
+    output = other.output;
+    evaluation_cycle = other.evaluation_cycle;
+
+    inputs = other.inputs;
+
+    other.inputs = std::vector<logicOperandi*>();
+}
+
+logicOperandi logicOperandi::operator=(const logicOperandi& other){
+    name = other.name;
+    uid = other.uid;
+    type = other.type;
+    output = other.output;
+    evaluation_cycle = other.evaluation_cycle;
+    return *this;
+}*/

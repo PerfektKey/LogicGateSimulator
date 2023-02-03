@@ -1,8 +1,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-#include "header/Logic-Gate.h"
-#include "header/logic-operandi.h"
+#include "../header/Logic-Gate.h"
+#include "../header/logic-operandi.h"
 
 void nandTest(){
     LogicGate nand;

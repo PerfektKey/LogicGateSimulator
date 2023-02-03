@@ -18,10 +18,12 @@ enum class LOGIC_TYPE {
     AND = 0,
     NOT,
     PIN,
+    ANY,
     CTR
 };
 
 struct logicOperandi{
+    std::string name;
     std::string uid;
     LOGIC_TYPE type;
 
@@ -34,7 +36,11 @@ struct logicOperandi{
     logicOperandi(std::string,LOGIC_TYPE);
     logicOperandi();
     logicOperandi(const logicOperandi&);
-    
+    ~logicOperandi();
+
+
+    //logicOperandi(logicOperandi&&);
+    //logicOperandi operator=(const logicOperandi&);
 };
 
 STATE LogicalAND(STATE,STATE);

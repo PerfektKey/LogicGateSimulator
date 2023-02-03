@@ -3,25 +3,28 @@
     "LOP" : [
         {
             "uniqueID" : "0-and-and-0",
-            "type" : "and"
+            "type" : "AND"
         },
         {
+            "name" : "A",
             "uniqueID" : "0-and-input-0",
             "type" : "PIN",
             "direction" : "input"
         },
         {
+            "name" : "B",
             "uniqueID" : "0-and-input-1",
             "type" : "PIN",
             "direction" : "input"
         },
         {
+            "name" : "C",
             "uniqueID" : "0-and-output-0",
             "type" : "PIN",
-            "direction" : "input"
+            "direction" : "output"
         }
     ],
-    "connections" : [
+    "CON" : [
         {
             "uniqueID" : "0-and-and-0",
             "connects" : ["0-and-input-0","0-and-input-1"]
