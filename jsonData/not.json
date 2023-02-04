@@ -1,0 +1,31 @@
+{
+    "name" : "not",
+    "LOP" : [
+	{
+	    "uniqueID" : "0-not-not-0",
+            "type" : "NOT"
+	},
+        {
+            "name" : "A",
+            "uniqueID" : "0-not-input-0",
+            "type" : "PIN",
+            "direction" : "input"
+        },
+        {
+            "name" : "Out",
+            "uniqueID" : "0-not-output-0",
+            "type" : "PIN",
+            "direction" : "output"
+        }
+    ],
+    "CON" : [
+        {
+            "uniqueID" : "0-not-not-0",
+            "connects" : ["0-not-input-0"]
+        },
+        {
+            "uniqueID" : "0-not-output-0",
+            "connects" : ["0-not-not-0"]
+        }
+    ]
+}

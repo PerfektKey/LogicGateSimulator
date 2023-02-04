@@ -137,6 +137,7 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
         if (LOP.inputs.size() == 0)
             break;
         for (const logicOperandi* lop : LOP.inputs){
+            evaluate((logicOperandi&)(*lop), current_cycle);
             LOP.output = STATE::LOW;
             if (lop->output == STATE::HIGH){
                 LOP.output = STATE::HIGH;
@@ -331,6 +332,7 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
     }
     //return;
     for (unsigned int i = 0;i < CON.size();i++){
+
         logicOperandi* to = gate.getLOP(Newuid.at(CON[i]["uniqueID"].asString()));
         if (to == nullptr)
             return;
@@ -340,9 +342,133 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
             if (from == nullptr)
                 return;
             to->inputs.push_back(from);
-
+            //std::cout << CON[i]["uniqueID"].asString() << " <- " << CON[i]["connects"][j].asString() << "\n";
+            //std::cout <<Newuid.at(CON[i]["uniqueID"].asString()) << " <- " << Newuid.at(CON[i]["connects"][j].asString()) << "\n";
         }
     }
 
 }
-//gate to json
+void getALL(std::vector<logicOperandi*>& all,logicOperandi* LOP){
+    for (logicOperandi* lop : LOP->inputs){
+        all.push_back(lop);
+        getALL(all,lop);
+    }
+}
+void GatesToJson(LogicGate& gate, fs::path path, std::string name){
+    Json::Value root;
+    Json::Value data;
+
+    root["name"] = name;
+
+    std::vector<logicOperandi*> all;
+
+    std::map<std::string,std::string> Newids;
+
+    unsigned int index = 0;
+    for (auto&[uid,lop] : gate.getOutputs()){
+        getALL(all,&lop);
+        data.clear();
+        data["name"] = lop.name;
+        std::string id = name;id+="-output-";id+= std::to_string(index);
+        Newids[lop.uid] = name+"-output-"+std::to_string(index);
+        data["uniqueID"] = id;
+        data["type"] = "PIN";
+        data["direction"] = "output";
+        root["LOP"][index] = data;
+        //root["LOP"][index]
+        index++;
+    }
+
+    /*for (logicOperandi* l : all){
+        std::cout << l->uid << "\n";
+    }*/
+
+    std::map<LOGIC_TYPE,int> amm;
+    amm[LOGIC_TYPE::AND] = 0;
+    amm[LOGIC_TYPE::NOT] = 0;
+    amm[LOGIC_TYPE::PIN] = 0;
+    amm[LOGIC_TYPE::ANY] = 0;
+
+    for (logicOperandi* lop : all){
+        data.clear();
+        if (lop->type == LOGIC_TYPE::AND){
+            data["uniqueID"] = name+"-and-"+std::to_string(amm.at(LOGIC_TYPE::AND));
+            data["type"] = "AND";
+            Newids[lop->uid] = name+"-and-"+std::to_string(amm.at(LOGIC_TYPE::AND));
+            amm[LOGIC_TYPE::AND]++;
+        }
+        if (lop->type == LOGIC_TYPE::NOT){
+            data["uniqueID"] = name+"-not-"+std::to_string(amm.at(LOGIC_TYPE::NOT));
+            data["type"] = "NOT";
+            Newids[lop->uid] = name+"-not-"+std::to_string(amm.at(LOGIC_TYPE::NOT));
+            amm[LOGIC_TYPE::NOT]++;
+        }
+        if (lop->type == LOGIC_TYPE::PIN){
+            if (lop->inputs.size() != 0){
+                data["uniqueID"] = name+"-any-"+std::to_string(amm.at(LOGIC_TYPE::ANY));
+                data["type"] = "ANY";
+                Newids[lop->uid] = name+"-any-"+std::to_string(amm.at(LOGIC_TYPE::ANY));
+                std::cout << lop->uid << " -> " << name+"-any-"+std::to_string(amm.at(LOGIC_TYPE::ANY)) << "\n";
+                amm[LOGIC_TYPE::ANY]++;
+            }else{
+                data["name"] = lop->name;
+                data["uniqueID"] = name+"-input-"+std::to_string(amm.at(LOGIC_TYPE::PIN));
+                data["type"] = "PIN";
+                data["direction"] = "input";
+                Newids[lop->uid] = name+"-input-"+std::to_string(amm.at(LOGIC_TYPE::PIN));
+                amm[LOGIC_TYPE::PIN]++;
+            }
+        }
+        if (lop->type == LOGIC_TYPE::ANY){
+            data["uniqueID"] = name+"-any-"+std::to_string(amm.at(LOGIC_TYPE::ANY));
+            data["type"] = "ANY";
+            Newids[lop->uid] = name+"-any-"+std::to_string(amm.at(LOGIC_TYPE::ANY));
+            amm[LOGIC_TYPE::ANY]++;
+        }
+
+        root["LOP"][index] = data;
+        index++;
+    }
+    index = 0;
+    for (auto&[uid,lop] : gate.getOutputs()){
+        if (lop.inputs.size() == 0)
+            continue;
+        data.clear();
+        data["uniqueID"] = Newids.at(lop.uid);
+        unsigned int j = 0;
+        for (logicOperandi* lopInp : lop.inputs){
+            data["connects"][j] = Newids.at(lopInp->uid);
+        }
+        root["CON"][index] = data;
+        index++;
+    }
+    for (logicOperandi* lop : all){
+        if (lop->inputs.size() == 0)
+            continue;
+        data.clear();
+        data["uniqueID"] = Newids.at(lop->uid);
+        unsigned int j = 0;
+        for (logicOperandi* lopInp : lop->inputs){
+            data["connects"][j] = Newids.at(lopInp->uid);
+            std::cout << lop->uid << " = " << Newids.at(lop->uid) << "\n-> " << lopInp->uid << " = " << Newids.at(lopInp->uid) << "\n";
+            j++;
+        }
+        root["CON"][index] = data;
+        index++;
+    }
+    //std::cout << all << "\n";
+
+    std::string json_file;
+
+    Json::StreamWriterBuilder builder;
+    json_file = Json::writeString(builder, root);
+    //std::cout << json_file << std::endl;
+
+
+    std::ofstream file;
+    file.open(path, std::ios::trunc);
+    file << json_file;
+    //file.write()
+    file.close();
+
+}
