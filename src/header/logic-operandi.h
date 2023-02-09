@@ -38,10 +38,13 @@ public:
     logicOperandi(std::string,LOGIC_TYPE);
     logicOperandi();
     logicOperandi(const logicOperandi&);
+    logicOperandi(logicOperandi&&);
+
 
 
     //logicOperandi(logicOperandi&&);
-    //logicOperandi operator=(const logicOperandi&);
+    logicOperandi operator=(const logicOperandi&);
+    logicOperandi& operator=(logicOperandi&&);
 };
 
 STATE LogicalAND(STATE,STATE);

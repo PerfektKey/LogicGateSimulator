@@ -7,15 +7,53 @@ LogicGate::LogicGate(){
     name = "";
 }
 LogicGate::~LogicGate(){
-    std::cout << "destroy: " << this << " -> " << name << "\n";
+    //std::cout << "destroy gate: " << this << " -> " << name << "\n";
 }
-/*
+
 LogicGate::LogicGate(LogicGate&& other){
-    logics = other.logics;
-    pins = other.pins;
+    logics = std::move(other.logics);
+    pins = std::move(other.pins);
+    outsideInputs = std::move(other.outsideInputs);
 
+    name = other.name;
+    //std::cout << name << " : " << other.name << "\n";
+    color = other.color;
+    return;
 
-}*/
+    other.name = std::string();
+    other.color = sf::Color();
+    other.logics = std::map<std::string,logicOperandi>();
+    other.pins = std::map<std::string,std::map<std::string,logicOperandi>>();
+    other.outsideInputs = std::map<std::string,logicOperandi*>();
+}
+
+LogicGate& LogicGate::operator=(LogicGate&& other){
+        if (this != &other){        
+        logics = std::move(other.logics);
+        pins = std::move(other.pins);
+        outsideInputs = std::move(other.outsideInputs);
+
+        name = other.name;
+        color = other.color;
+
+        other.logics = std::map<std::string,logicOperandi>();
+        other.pins = std::map<std::string,std::map<std::string,logicOperandi>>();
+        other.outsideInputs = std::map<std::string,logicOperandi*>();
+        }
+    return *this;
+}
+
+void LogicGate::setOutput(STATE st){
+    if (pins["input"].size() == 0 && pins["output"].size() == 1)
+        pins["output"].at(0).output = st;
+}
+STATE LogicGate::getOutput(){
+    if (pins["input"].size() == 0 && pins["output"].size() == 1)
+        return pins["output"].at(0).output;
+    if (pins["input"].size() == 1 && pins["output"].size() == 0)
+        return pins["input"].at(0).output;
+    return STATE::FLOATING;
+}
 
 
 void LogicGate::addLogicOP(logicOperandi LOP){
@@ -26,7 +64,7 @@ void LogicGate::addLogicOP(logicOperandi LOP){
     logics[LOP.uid] = LOP;
 }
 void LogicGate::addLogicOP(LOGIC_TYPE type,std::string uid){
-    logics[uid] = logicOperandi(uid,type,STATE::LOW);
+    logics[uid] = std::move(logicOperandi(uid,type,STATE::LOW));
 }
 std::map<std::string,logicOperandi>& LogicGate::getLogicOP(){
     return logics;
@@ -34,12 +72,17 @@ std::map<std::string,logicOperandi>& LogicGate::getLogicOP(){
 
 //set Add Input/Output and set get Input/Output
 void LogicGate::addInputPin(std::string uid){
-    pins["input"][uid] = logicOperandi(uid,LOGIC_TYPE::PIN,STATE::LOW);
+    pins["input"][uid] = std::move(logicOperandi(uid,LOGIC_TYPE::PIN,STATE::LOW));
 }
 void LogicGate::addInputPin(std::string uid,std::string name){
     logicOperandi lop(uid,LOGIC_TYPE::PIN,STATE::LOW);
     lop.name = name;
-    pins["input"][uid] = lop;
+    pins["input"][uid] = std::move(lop);
+}
+void LogicGate::addInputCTR(std::string uid,std::string name){
+    logicOperandi lop(uid,LOGIC_TYPE::CTR,STATE::LOW);
+    lop.name = name;
+    pins["output"][uid] = lop;
 }
 std::map<std::string,logicOperandi>& LogicGate::getInputs(){
     return pins["input"];
@@ -50,6 +93,11 @@ void LogicGate::addOutputPin(std::string uid){
 }
 void LogicGate::addOutputPin(std::string uid,std::string name){
     logicOperandi lop(uid,LOGIC_TYPE::PIN,STATE::LOW);
+    lop.name = name;
+    pins["output"][uid] = lop;
+}
+void LogicGate::addOutputCTR(std::string uid,std::string name){
+    logicOperandi lop(uid,LOGIC_TYPE::CTR,STATE::LOW);
     lop.name = name;
     pins["output"][uid] = lop;
 }
@@ -90,6 +138,7 @@ void LogicGate::connectGatesIO(LogicGate& parent,logicOperandi& to,logicOperandi
             //std::cout << uid << "\n";
         } 
     }
+    recursive = true;
 }
 
 void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
@@ -145,7 +194,7 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
             }
         }
         break;
-    case LOGIC_TYPE::CTR://still not decided maybe just no operation
+    case LOGIC_TYPE::CTR:// no operation
         break;
         
     default:
@@ -183,7 +232,7 @@ void LogicGate::simulateOWNR(unsigned int& cycle,bool status_update){
         pin->output = STATE::LOW;
     }
     
-        simulateR(cycle);
+        simulate(cycle);
     if (status_update)
         printStateR(false);
     cycle++;
@@ -195,7 +244,7 @@ void LogicGate::simulateOWNR(unsigned int& cycle,bool status_update){
     for (unsigned int i = 0;i < outsideInputs.size();i++)//unsigned int j = 0;j < pins["input"].size();j++
     for (auto&[uid,pin] : outsideInputs){
         pin->output = LogicalNOT(pin->output);
-        simulateR(cycle);
+        simulate(cycle);
         if (status_update && (cycle != outsideInputs.size()+1 || outsideInputs.size() == 1))
             printStateR(false);
         cycle++;
@@ -204,17 +253,6 @@ void LogicGate::simulateOWNR(unsigned int& cycle,bool status_update){
 void LogicGate::simulate(unsigned int current_cycle){
     /*for (auto&[uid, LOP] : pins["input"]){
         evaluate(LOP, current_cycle);
-    }
-    for (auto&[uid,LOP] : logics){
-        evaluate(LOP, current_cycle);
-    }*/
-    for (auto&[uid, LOP] : pins["output"]){
-        evaluate(LOP, current_cycle);
-    }
-}
-void LogicGate::simulateR(unsigned int current_cycle){
-    /*for (auto&[uid, LOP] : outsideInputs){
-        evaluate(*LOP, current_cycle);
     }
     for (auto&[uid,LOP] : logics){
         evaluate(LOP, current_cycle);
@@ -264,22 +302,36 @@ void LogicGate::printStateR(bool seperator){
     if (seperator)std::cout << "=########################################=\n";
 }
 void LogicGate::printInfo(){
-    std::cout << "\n=########################################=\ngate name: " << name << "\n";
+    //std::cout << "\n=########################################=\n" << "\n";
+    std::cout << "gate name: " << name << "\n";
     auto CONlamda = [](logicOperandi* lop){for (logicOperandi* inp : lop->inputs){std::cout << inp->uid << ", ";}std::cout << "\n";};
     for (auto&[uid, LOP] : logics){
-        std::cout << LOP.uid << " <- "; CONlamda(&LOP);
+        std::cout << "\t" << LOP.uid << " <- "; CONlamda(&LOP);
     }
     for (auto&[uid, LOP] : pins["input"]){
-        std::cout << LOP.uid << "=" << LOP.name << " <- "; CONlamda(&LOP);
+        std::cout << "\t" << LOP.uid << " <- "; CONlamda(&LOP);
     }
     for (auto&[uid, LOP] : pins["output"]){
-        std::cout << LOP.uid << "=" << LOP.name << " <- "; CONlamda(&LOP);
+        std::cout << "\t" << LOP.uid << " <- "; CONlamda(&LOP);
     }
-    std::cout << "\n=########################################=\n";
+    //std::cout << "\n=########################################=\n";
 }
 
 void LogicGate::setName(std::string __name){
     name = __name;
+}
+std::string LogicGate::getName(){
+    return name;
+}
+
+void LogicGate::setColor(int c[3]){
+    color = sf::Color();
+    color.r = c[0];
+    color.g = c[1];
+    color.b = c[2];
+}
+sf::Color LogicGate::getColor(){
+    return color;
 }
 
 void LogicGate::clear(){
@@ -299,6 +351,11 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
     //gate.clear();
 
     gate.setName(value["name"].asString());
+    int c[3];
+    c[0] = value["color"][0].asInt();
+    c[1] = value["color"][1].asInt();
+    c[2] = value["color"][2].asInt();
+    gate.setColor(c);
 
     Json::Value LOP = value["LOP"];
     Json::Value CON = value["CON"];
@@ -323,14 +380,20 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
             if (LOP[i]["direction"].asString() == "output")
                 gate.addOutputPin(uid,name);
         }
+        if (type == "CTR"){
+            if (LOP[i]["direction"].asString() == "input")
+                gate.addInputCTR(uid,name);
+            if (LOP[i]["direction"].asString() == "output")
+                gate.addOutputCTR(uid,name);
+        }
         if (type == "AND")
             gate.addLogicOP(LOGIC_TYPE::AND, uid);
         if (type == "NOT")
             gate.addLogicOP(LOGIC_TYPE::NOT, uid);
         if (type == "ANY")
             gate.addLogicOP(LOGIC_TYPE::ANY, uid);
+
     }
-    //return;
     for (unsigned int i = 0;i < CON.size();i++){
 
         logicOperandi* to = gate.getLOP(Newuid.at(CON[i]["uniqueID"].asString()));
@@ -342,9 +405,11 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
             if (from == nullptr)
                 return;
             to->inputs.push_back(from);
+            from = nullptr;
             //std::cout << CON[i]["uniqueID"].asString() << " <- " << CON[i]["connects"][j].asString() << "\n";
             //std::cout <<Newuid.at(CON[i]["uniqueID"].asString()) << " <- " << Newuid.at(CON[i]["connects"][j].asString()) << "\n";
         }
+        to = nullptr;
     }
 
 }
@@ -425,6 +490,7 @@ void GatesToJson(LogicGate& gate, fs::path path, std::string name){
             Newids[lop->uid] = name+"-any-"+std::to_string(amm.at(LOGIC_TYPE::ANY));
             amm[LOGIC_TYPE::ANY]++;
         }
+        
 
         root["LOP"][index] = data;
         index++;

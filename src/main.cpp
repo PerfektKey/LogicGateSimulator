@@ -3,71 +3,157 @@
 
 #include "header/Logic-Gate.h"
 #include "header/logic-operandi.h"
-
-#include "hsrc/test.cpp"
-
+#include "header/DrawGate.h"
+#include "header/scrollContainer.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
+
+
+std::vector<LogicGate> HiddenGates;
+std::vector<DrawGate> gates;
+std::vector<DrawGate> inputs;
+std::vector<DrawGate> outputs;
+
+std::vector<DrawGate> showDG;
+std::vector<LogicGate> showLG;
+std::vector<fs::path> showPaths;
+
+
+fs::path fullpath;
+fs::path Datapath;
+std::string gateName;
+
+fs::path fontFullpath;
+
+/*
+connecting gates and simulating
+*/
 
 int main(){
+    fs::path p;
+    p = fs::current_path();
+    p += "\\jsonData\\and.json";
 
-    std::string pathA = "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\jsonData\\nand.json";
-    LogicGate nand;
-    JsonToGate(pathA,nand,"-0");
-    //nand.printInfo();
-    unsigned int k = 0;
-    nand.simulateOWN(k,true);
-    system("pause");
+    Datapath = fs::current_path();
+    Datapath += "\\jsonData";
 
-    std::string pathB = "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\jsonData\\or.json";
-    LogicGate OR;
-    JsonToGate(pathB,OR,"-0");
-    //OR.printInfo();
-    k = 0;
-    OR.simulateOWN(k,true);
-    system("pause");
+    fontFullpath = fs::current_path();
+    fontFullpath += "\\ARCADECLASSIC.TTF";
 
-    return 1;
+
+    std::map<std::string,unsigned int> GateId;
+
+    sf::RenderWindow window(sf::VideoMode(1000,800),"LIFE ENGINE");
+    sf::RectangleShape bg;
+    bg.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
+    bg.setFillColor(sf::Color(100,100,100));
+
+    scrollContainer SC(sf::Vector2f(0,window.getSize().y*.9),sf::Vector2f(window.getSize().x,window.getSize().y*.1));
+    SC.setColor(sf::Color(50,50,50));
+
+    std::cout << fontFullpath << "\n";
+
+    for(const auto& dirEntry : fs::recursive_directory_iterator(Datapath)){
+            SC.addLabel(dirEntry.path().stem().generic_string(),fontFullpath);
+        }
+
+    while(window.isOpen()){
+
+
+        sf::Event event;
+        while(window.pollEvent(event)){
+
+            if (event.type == sf::Event::Closed)    window.close();
+            if (event.type == sf::Event::MouseButtonPressed){
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+                    logicOperandi* lop = nullptr;
+                    for (DrawGate& dg : inputs){
+                        if (lop != nullptr)
+                            break;
+                        lop = dg.pressedPin(sf::Mouse::getPosition(window));
+                    }
+                    for (DrawGate& dg : outputs){
+                        if (lop != nullptr)
+                            break;
+                        lop = dg.pressedPin(sf::Mouse::getPosition(window));
+                    }
+                    for (DrawGate& dg : gates){
+                        if (lop != nullptr)
+                            break;
+                        lop = dg.pressedPin(sf::Mouse::getPosition(window)); 
+                    }
+                    gateName = SC.PressLabel(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y));
+                    if (lop != nullptr){
+                        std::cout << lop->uid << "\n";
+                    }
+                    if (lop == nullptr && gateName != ""){
+                        LogicGate tmp;
+                        fullpath = Datapath.concat("\\"+gateName+".json");
+                        JsonToGate(fullpath,tmp,"-");
+                        showDG.push_back(DrawGate(&tmp));
+                        showLG.push_back(std::move(tmp));
+                        showPaths.push_back(fullpath);
+                    }
+                    if (lop == nullptr && gateName == ""){
+                        for (fs::path& p : showPaths){
+                            LogicGate tmp;
+                            JsonToGate(p,tmp,"-"+std::to_string(GateId[gateName]));
+                            if (p.stem().generic_string() == "Input"){
+                                inputs.push_back(DrawGate(&tmp));
+                                inputs.at(inputs.size()-1).setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y));
+                            }else
+                            if (p.stem().generic_string() == "Output"){
+                                outputs.push_back(DrawGate(&tmp));
+                                outputs.at(outputs.size()-1).setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y));
+                            }else{
+                                gates.push_back(DrawGate(&tmp));
+                                gates.at(gates.size()-1).setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y));
+                            }
+                            
+                            HiddenGates.push_back(std::move(tmp));
+                            showPaths.clear();
+                            showDG.clear();
+                            showLG.clear();
+                            GateId[gateName]++;
+                        }
+                    }
+
+                }
+            }
+        }
+
+        window.clear();
+        window.draw(bg);
+        SC.draw(window);
+        for (DrawGate& dg : showDG){
+            dg.setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y));
+            dg.draw(window);
+        }
+        for (DrawGate& dg : inputs){
+            dg.draw(window);
+        }
+        for (DrawGate& dg : outputs){
+            dg.draw(window);
+        }
+        for (DrawGate& dg : gates){
+            dg.draw(window);
+        }
+
+        window.display();
+
+
+    }
+
+    std::cin.get();
+
 }
-int maiSn(){
-    std::string pathA = "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\jsonData\\and.json";
-    std::string pathB = "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\jsonData\\not.json";
 
-    LogicGate a;
-    JsonToGate(pathA,a,"-0");
-    LogicGate b;
-    JsonToGate(pathB,b,"-1");
-
-    LogicGate n1;
-    JsonToGate(pathB,n1,"-2");
-    LogicGate n2;
-    JsonToGate(pathB, n2,"-3");
-
-    //a.connectGatesIO(n1,*a.getLOP("0-and-input-0-0"),*n1.getLOP("0-not-output-0-2"));
-    //a.connectGatesIO(n2,*a.getLOP("0-and-input-1-0"),*n2.getLOP("0-not-output-0-3"));
-
-    b.connectGatesIO(a,*b.getLOP("0-not-input-0-1"),*a.getLOP("0-and-output-0-0"));
-    //a.printInfo();
-    //b.printInfo();
-    fs::path p = fs::current_path();
-    p += "\\jsonData\\nand.json";
-
-    unsigned int j = 0;
-    //b.simulateOWNR(j,true);
-    system("pause");
-
-    GatesToJson(b,p,"nand");
-    system("pause");
-    return 1;
-
-    unsigned int i = 0;
-    std::cout << "Simulate from not gate Recursivly  \n";
-    i = 0;
-    b.simulateOWNR(i,true);
-
-    system("pause");
-
-    return 1;
+void AddLabels(){
+    for(const auto& dirEntry : fs::recursive_directory_iterator(Datapath)){
+        std::cout << dirEntry.path().stem() << "\n";
+        continue;
+    }
 }

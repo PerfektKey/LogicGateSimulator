@@ -1,0 +1,79 @@
+{
+	"CON" : 
+	[
+		{
+			"connects" : 
+			[
+				"nand-not-0"
+			],
+			"uniqueID" : "nand-output-0"
+		},
+		{
+			"connects" : 
+			[
+				"nand-any-0"
+			],
+			"uniqueID" : "nand-not-0"
+		},
+		{
+			"connects" : 
+			[
+				"nand-any-1"
+			],
+			"uniqueID" : "nand-any-0"
+		},
+		{
+			"connects" : 
+			[
+				"nand-and-0"
+			],
+			"uniqueID" : "nand-any-1"
+		},
+		{
+			"connects" : 
+			[
+				"nand-input-0",
+				"nand-input-1"
+			],
+			"uniqueID" : "nand-and-0"
+		}
+	],
+	"LOP" : 
+	[
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "nand-output-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "nand-not-0"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "nand-any-0"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "nand-any-1"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "nand-and-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "A",
+			"type" : "PIN",
+			"uniqueID" : "nand-input-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "B",
+			"type" : "PIN",
+			"uniqueID" : "nand-input-1"
+		}
+	],
+	"name" : "nand"
+}

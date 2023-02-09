@@ -10,7 +10,7 @@
                 "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\src\\hsrc\\*.cpp",
                 "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\src\\main.cpp",
                 "-o",
-                "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\bin",
+                "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\bin\\main.exe",
                 "-lsfml-graphics",
                 "-lsfml-window",
                 "-lsfml-system",

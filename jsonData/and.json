@@ -1,5 +1,6 @@
 {
     "name" : "and",
+    "color" : [0,0,255],
     "LOP" : [
         {
             "uniqueID" : "0-and-and-0",

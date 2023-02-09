@@ -53,20 +53,19 @@ logicOperandi::logicOperandi(const logicOperandi& other){
 
 
 logicOperandi::~logicOperandi(){
-    //std::cout << "destroy: " << this << " -> " << uid << "\n";
+    //std::cout << "destroy LOP: " << this << " -> " << uid << "\n";
     //inputs = std::vector<logicOperandi*>();
 }
 
-/*
+
 logicOperandi::logicOperandi(logicOperandi&& other){
-    std::cout << "Moved: " << other.uid << "\n";
     name = other.name;
     uid = other.uid;
     type = other.type;
     output = other.output;
     evaluation_cycle = other.evaluation_cycle;
 
-    inputs = other.inputs;
+    inputs = std::move(other.inputs);
 
     other.inputs = std::vector<logicOperandi*>();
 }
@@ -78,4 +77,19 @@ logicOperandi logicOperandi::operator=(const logicOperandi& other){
     output = other.output;
     evaluation_cycle = other.evaluation_cycle;
     return *this;
-}*/
+}
+
+logicOperandi& logicOperandi::operator=(logicOperandi&& other){
+    if (this != &other){
+        name = other.name;
+        uid = other.uid;
+        type = other.type;
+        output = other.output;
+        evaluation_cycle = other.evaluation_cycle;
+
+        inputs = std::move(other.inputs);
+
+        other.inputs = std::vector<logicOperandi*>();
+    }
+    return *this;
+}

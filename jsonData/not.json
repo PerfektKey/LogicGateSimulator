@@ -1,5 +1,6 @@
 {
     "name" : "not",
+    "color" : [255,0,0],
     "LOP" : [
 	{
 	    "uniqueID" : "0-not-not-0",

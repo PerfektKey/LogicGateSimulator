@@ -1,0 +1,145 @@
+{
+	"CON" : 
+	[
+		{
+			"connects" : 
+			[
+				"or-not-0"
+			],
+			"uniqueID" : "or-output-0"
+		},
+		{
+			"connects" : 
+			[
+				"or-any-0"
+			],
+			"uniqueID" : "or-not-0"
+		},
+		{
+			"connects" : 
+			[
+				"or-any-1"
+			],
+			"uniqueID" : "or-any-0"
+		},
+		{
+			"connects" : 
+			[
+				"or-and-0"
+			],
+			"uniqueID" : "or-any-1"
+		},
+		{
+			"connects" : 
+			[
+				"or-any-2",
+				"or-any-4"
+			],
+			"uniqueID" : "or-and-0"
+		},
+		{
+			"connects" : 
+			[
+				"or-any-3"
+			],
+			"uniqueID" : "or-any-2"
+		},
+		{
+			"connects" : 
+			[
+				"or-not-1"
+			],
+			"uniqueID" : "or-any-3"
+		},
+		{
+			"connects" : 
+			[
+				"or-input-0"
+			],
+			"uniqueID" : "or-not-1"
+		},
+		{
+			"connects" : 
+			[
+				"or-any-5"
+			],
+			"uniqueID" : "or-any-4"
+		},
+		{
+			"connects" : 
+			[
+				"or-not-2"
+			],
+			"uniqueID" : "or-any-5"
+		},
+		{
+			"connects" : 
+			[
+				"or-input-1"
+			],
+			"uniqueID" : "or-not-2"
+		}
+	],
+	"LOP" : 
+	[
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "or-output-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "or-not-0"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "or-any-0"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "or-any-1"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "or-and-0"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "or-any-2"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "or-any-3"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "or-not-1"
+		},
+		{
+			"direction" : "input",
+			"name" : "A",
+			"type" : "PIN",
+			"uniqueID" : "or-input-0"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "or-any-4"
+		},
+		{
+			"type" : "ANY",
+			"uniqueID" : "or-any-5"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "or-not-2"
+		},
+		{
+			"direction" : "input",
+			"name" : "A",
+			"type" : "PIN",
+			"uniqueID" : "or-input-1"
+		}
+	],
+	"name" : "or"
+}

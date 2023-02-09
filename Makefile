@@ -7,7 +7,9 @@ INCLUDES = -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
 
 all:main.exe clean run
 
-main.exe:main.o logic-Gate.o logic-operandi.o
+main.exe:main.o logic-Gate.o logic-operandi.o DrawGate.o scrollContainer.o
+	$(CC) $(FLAGS) *.o -o $(BIN)/main.exe $(INCLUDES)
+console.exe:logic-Gate.o logic-operandi.o console.o
 	$(CC) $(FLAGS) *.o -o $(BIN)/main.exe $(INCLUDES)
 
 
