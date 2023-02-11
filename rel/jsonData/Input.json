@@ -1,0 +1,13 @@
+{
+    "name" : "input",
+    "color" : [200,200,200],
+    "LOP" : [
+        {
+            "name" : "Out",
+            "uniqueID" : "button-output-0",
+            "type" : "CTR",
+            "direction" : "output"
+        }
+    ],
+    "CON" : []
+}
