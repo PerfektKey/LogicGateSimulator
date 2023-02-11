@@ -27,6 +27,7 @@ private:
         logicOperandi* connectedLOP;
         std::string name;
         sf::CircleShape body;
+        sf::Vector2f offset;
     };
 
     std::vector<pin> pins;
@@ -46,7 +47,13 @@ public:
     void updatePins();
     void draw(sf::RenderWindow&,bool=true);
 
+    sf::Vector2f getSize();
+    sf::Vector2f getPosition();
+    std::string getName();
+    LogicGate* getGate();
+
     logicOperandi* pressedPin(sf::Vector2i pos);
+    LogicGate* pressedGate(sf::Vector2f pos);
 
 };
 

@@ -35,6 +35,7 @@ public:
 
     void evaluate(logicOperandi&,unsigned int);
     void simulate(unsigned int);
+    void simulateI(unsigned int);
     void simulateOWN(unsigned int&,bool);
     void simulateOWNR(unsigned int&,bool);
 
@@ -68,7 +69,7 @@ public:
     void connectIO(std::string,std::string);
     void connectIO(logicOperandi&,logicOperandi&);
 
-    void connectGatesIO(LogicGate&,logicOperandi&,logicOperandi&);
+    void connectGatesIO(logicOperandi&,logicOperandi&);
 
     void setName(std::string);
     std::string getName();

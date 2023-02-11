@@ -19,7 +19,6 @@ LogicGate::LogicGate(LogicGate&& other){
     //std::cout << name << " : " << other.name << "\n";
     color = other.color;
     return;
-
     other.name = std::string();
     other.color = sf::Color();
     other.logics = std::map<std::string,logicOperandi>();
@@ -116,29 +115,8 @@ void LogicGate::connectIO(logicOperandi& to,logicOperandi& from){//conect by ref
     to.inputs.push_back(&from);
 }
 
-void LogicGate::connectGatesIO(LogicGate& parent,logicOperandi& to,logicOperandi& from){
+void LogicGate::connectGatesIO(logicOperandi& to,logicOperandi& from){
     to.inputs.push_back(&from);
-    for (auto&[uid,pin] : pins["input"]){
-        //pin.type = LOGIC_TYPE::ANY;
-
-    }
-    std::cout << to.uid << "connects to:\n";
-    for (logicOperandi* lop : to.inputs){
-        std::cout << lop->uid << "\n";
-    }
-    if (parent.getOInputs().size() == 0){
-        for(auto&[uid,pin] : parent.getInputs()){
-            outsideInputs[uid] = &pin;
-            //std::cout << uid << "\n";
-        }
-    }else{
-        for(auto&[uid,pin] : parent.getOInputs()){
-
-            outsideInputs[uid] = pin;
-            //std::cout << uid << "\n";
-        } 
-    }
-    recursive = true;
 }
 
 void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
@@ -195,6 +173,17 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
         }
         break;
     case LOGIC_TYPE::CTR:// no operation
+        break;
+        if (LOP.inputs.size() == 0)
+            break;
+        for (const logicOperandi* lop : LOP.inputs){
+            evaluate((logicOperandi&)(*lop), current_cycle);
+            LOP.output = STATE::LOW;
+            if (lop->output == STATE::HIGH){
+                LOP.output = STATE::HIGH;
+                break;
+            }
+        }
         break;
         
     default:
@@ -261,6 +250,21 @@ void LogicGate::simulate(unsigned int current_cycle){
         evaluate(LOP, current_cycle);
     }
 }
+void LogicGate::simulateI(unsigned int current_cycle){
+    //std::cout << "sim";
+    for (auto&[uid, LOP] : pins["input"]){
+        evaluate(LOP, current_cycle);
+        //std::cout << "\n" << "input sim\n";
+    }
+    /*for (auto&[uid,LOP] : logics){
+        evaluate(LOP, current_cycle);
+    }*/
+    for (auto&[uid, LOP] : pins["output"]){
+        evaluate(LOP, current_cycle);
+        //std::cout << "\n" << "output sim\n";
+    }
+}
+
 
 logicOperandi* LogicGate::getLOP(std::string uid){
     std::map<std::string,logicOperandi>::iterator search;
@@ -370,21 +374,13 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
         Newuid[uid] = uid+Auid;
 
         uid += Auid;
-        //std::cout << uid << "\n";
 
-        //std::cout << uid << "\n";
-
-        if (type == "PIN"){
-            if (LOP[i]["direction"].asString() == "input")
+        if (type == "PIN" || type == "CTR"){
+            if (LOP[i]["direction"].asString() == "input"){
                 gate.addInputPin(uid,name);
-            if (LOP[i]["direction"].asString() == "output")
+            }
+            else if (LOP[i]["direction"].asString() == "output")
                 gate.addOutputPin(uid,name);
-        }
-        if (type == "CTR"){
-            if (LOP[i]["direction"].asString() == "input")
-                gate.addInputCTR(uid,name);
-            if (LOP[i]["direction"].asString() == "output")
-                gate.addOutputCTR(uid,name);
         }
         if (type == "AND")
             gate.addLogicOP(LOGIC_TYPE::AND, uid);

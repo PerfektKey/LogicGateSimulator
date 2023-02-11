@@ -11,19 +11,25 @@ class scrollContainer{
 private:
     struct labelButton{
         sf::RectangleShape body;
-        sf::Font labelFont;
         sf::Text labelName;
         std::string name;
         sf::Vector2f position;
     };
 
+    sf::Font labelFont;
+
     const int CharSize = 48;
 
     std::vector<labelButton> __labels;
 
-    sf::Vector2f __position_offset;
+    //sf::Vector2f __position_offset;
+    //sf::Vector2f __position_offset;
 
-    float _scroll;
+    unsigned long labelLenght;
+
+    long double _scroll;
+    long double _max_scroll;
+    long double _min_scroll = 0;
 
     sf::RectangleShape __body;
     sf::Vector2f __position;
@@ -37,12 +43,15 @@ public:
     scrollContainer(sf::Vector2f,sf::Vector2f);
 
     void setColor(sf::Color);
+    void setFont(fs::path);
 
-    void addLabel(std::string,fs::path);
+    void addLabel(std::string);
 
     std::string PressLabel(sf::Vector2f);
 
     void draw(sf::RenderWindow&);
+
+    void scroll(long double);
 };
 
 #endif
