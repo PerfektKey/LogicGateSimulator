@@ -7,7 +7,7 @@
       "request": "launch",
       "args": [],
       "stopAtEntry": true,
-      "externalConsole": false,
+      "externalConsole": true,
       "cwd": "c:/Users/Marco/Documents/code/LogicGateSimulator",
       "program": "c:/Users/Marco/Documents/code/LogicGateSimulator/bin/main.exe",
       "MIMode": "gdb",

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <json/value.h>
+#include <json/json.h>
 
 #include "header/Logic-Gate.h"
 #include "header/logic-operandi.h"
@@ -18,14 +20,17 @@ std::vector<DrawGate> inputs;
 std::vector<DrawGate> outputs;
 
 std::vector<DrawGate*> showDG;
-std::vector<LogicGate> showLG;
-std::vector<fs::path> showPaths;
 
 
 fs::path Datapath;
 std::string gateName;
 
 fs::path fontFullpath;
+
+void createNewGate(fs::path outputPath,std::string name){
+
+}
+//std::vector<logicOperandi*> getALL(std::vector<logicOperandi*>);
 
 /*
 crashing if you place a gate and then place anything else
@@ -61,6 +66,7 @@ int main(){
     std::cout << fontFullpath << "\n";
     SC.setFont(fontFullpath);
     for(const auto& dirEntry : fs::recursive_directory_iterator(Datapath)){
+        std::cout << dirEntry << std::endl;
         SC.addLabel(dirEntry.path().stem().generic_string());
         GateId[dirEntry.path().stem().generic_string()] = 0;
     }
@@ -73,15 +79,19 @@ int main(){
 
 
         sf::Event event;
-        while(window.pollEvent(event)){
+        while( window.pollEvent( event ) ){
 
             if (event.type == sf::Event::Closed)    window.close();
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)){
+                //createNewGate(fs::current_path(),"test");
+                std::cout << "key N pressed\n";
+            }
             if (event.type == sf::Event::MouseButtonPressed){
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                     logicOperandi* lop = nullptr;
                     LogicGate* pressedLG = nullptr;
                     for (DrawGate& dg : inputs){
-                        if (pressedLG != nullptr && lop != nullptr)
+                        if (pressedLG != nullptr && lop != nullptr )
                             break;
                         if (lop == nullptr || showDG.size() == 0)
                             lop = dg.pressedPin(sf::Mouse::getPosition(window));
@@ -121,20 +131,17 @@ int main(){
                     if (pressedLG != nullptr){
                         for (auto&[uid,lop] : pressedLG->getOutputs()){
                             lop.output = LogicalNOT(lop.output);
-                            //sim();
+                            sim();
                             break;
                         }
                         //this throws a logic error IDK why
                         //pressedLG->getOutputs().at(0).output = (LogicalNOT(pressedLG->getOutputs().at(0).output));
                     }
-                    std::cout << fromLOP << " -> " << toLOP << std::endl;
+                    //std::cout << fromLOP << " -> " << toLOP << std::endl;
                     if (fromLOP != nullptr && toLOP != nullptr){
                         std::cout << "connecting\n";
                         if (std::find(toLOP->inputs.begin(),toLOP->inputs.end(),fromLOP) == toLOP->inputs.end())
                             toLOP->inputs.push_back(fromLOP);
-                        for (logicOperandi* lop : toLOP->inputs){
-                            std::cout << toLOP->uid << " connects to: " << lop->uid << "\n";
-                        }
                         fromLOP = nullptr;
                         toLOP = nullptr;
                     }
@@ -143,6 +150,8 @@ int main(){
                         LogicGate* tmp = new LogicGate();
                         fs::path tmpFullPath = Datapath;tmpFullPath.concat("\\");tmpFullPath.concat(gateName);tmpFullPath.concat(".json");
                         //std::cout << Datapath << "\n" << gateName << "\n" << tmpFullPath << "\n";
+                        //HiddenGates.push_back(std::move(tmp));
+                        //LogicGate* tmpP = &HiddenGates.at(HiddenGates.size()-1);
                         JsonToGate(tmpFullPath,*tmp,"-"+std::to_string(GateId[gateName]));
                         std::cout << GateId[gateName] << std::endl;
  
@@ -170,6 +179,8 @@ int main(){
                     fromLOP = nullptr;
                     toLOP = nullptr;
                 }
+
+                //std::cout << "show dg size: " << showDG.size() << std::endl;
             }
             if(event.type == sf::Event::MouseWheelScrolled){
                 if (event.mouseWheelScroll.delta == 1)
@@ -179,7 +190,7 @@ int main(){
             }
         }
 
-        sim();
+        //sim();
 
         window.clear();
         window.draw(bg);
@@ -187,6 +198,8 @@ int main(){
         sf::Vector2f positionAdd = sf::Vector2f(0,0);
         for (DrawGate* dg : showDG){
             //std::cout << dg->getGate()->get->uid << std::endl;
+            if (dg == nullptr)
+                break;
             dg->setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y) + positionAdd);
             //dg->draw(window,true);
             positionAdd += dg->getSize();
@@ -219,7 +232,7 @@ void sim(){
     if (outputs.size() == 0)
         for (DrawGate& DR : gates){
             //std::cout << "sim\n";
-            DR.getGate()->simulateI(i);
+            DR.getGate()->simulate(i);
         }
     i++;
 }
@@ -235,3 +248,11 @@ int findchar(const std::string& string,char toFind,unsigned int occ){
     }
     return -1;
 }
+
+/*void getALL(std::vector<logicOperandi*>& all,logicOperandi* LOP){
+    for (logicOperandi* lop : LOP->inputs){
+        all.push_back(lop);
+        getALL(all,lop);
+    }
+}*/
+

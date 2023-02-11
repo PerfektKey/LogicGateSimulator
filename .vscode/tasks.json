@@ -7,17 +7,13 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\src\\hsrc\\*.cpp",
-                "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\src\\main.cpp",
+                "src\\hsrc\\*.cpp",
+                "src\\main.cpp",
                 "-o",
-                "C:\\Users\\Marco\\Documents\\code\\LogicGateSimulator\\bin\\main.exe",
-                "-lsfml-graphics",
-                "-lsfml-window",
-                "-lsfml-system",
-                "-ljsoncpp"
+                "bin\\main.exe"
             ],
             "options": {
-                "cwd": "${fileDirname}"
+                "cwd": ""
             },
             "problemMatcher": [
                 "$gcc"

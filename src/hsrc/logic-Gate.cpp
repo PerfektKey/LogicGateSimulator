@@ -120,8 +120,10 @@ void LogicGate::connectGatesIO(logicOperandi& to,logicOperandi& from){
 }
 
 void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
-    if (LOP.evaluation_cycle == current_cycle)
+    if (LOP.evaluation_cycle == current_cycle && LOP.type != LOGIC_TYPE::PIN && LOP.type != LOGIC_TYPE::ANY){
+        //std::cout << "already evaluate from: " << LOP.uid << " = " << LOP.type << "\n";
         return;
+    }
     LOP.evaluation_cycle = current_cycle;
     //std::cout << "evaluate from: " << LOP.uid << " = " << LOP.type << "\n";
     switch (LOP.type)
@@ -144,28 +146,25 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
         LOP.output = LogicalNOT(LOP.inputs.at(0)->output);
         break;
     case LOGIC_TYPE::PIN://if any input is HIGH the LOP's output is HIGH
-        //std::cout << "evaluate from pinA\n";
         if (LOP.inputs.size() == 0)
             break;
-        //std::cout << "evaluate from pinB\n";
         LOP.output = STATE::LOW;
-        //evaluate(*LOP.inputs, current_cycle);
         for (const logicOperandi* lop : LOP.inputs){
-            //std::cout << "evaluate from pinC: " << lop->uid << "\n";
             evaluate((logicOperandi&)(*lop), current_cycle);
-            //std::cout << "evaluate from pinD\n";
             if (lop->output == STATE::HIGH){
+                //std::cout << lop->uid << " from " << LOP.uid << " is high\n";
                 LOP.output = STATE::HIGH;
                 break;
             }
+            //std::cout << lop->uid << " ret to " << LOP.uid << "\n";
         }
         break;
     case LOGIC_TYPE::ANY:
         if (LOP.inputs.size() == 0)
             break;
         for (const logicOperandi* lop : LOP.inputs){
-            evaluate((logicOperandi&)(*lop), current_cycle);
             LOP.output = STATE::LOW;
+            evaluate((logicOperandi&)(*lop), current_cycle);
             if (lop->output == STATE::HIGH){
                 LOP.output = STATE::HIGH;
                 break;
@@ -174,21 +173,22 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
         break;
     case LOGIC_TYPE::CTR:// no operation
         break;
-        if (LOP.inputs.size() == 0)
-            break;
-        for (const logicOperandi* lop : LOP.inputs){
-            evaluate((logicOperandi&)(*lop), current_cycle);
-            LOP.output = STATE::LOW;
-            if (lop->output == STATE::HIGH){
-                LOP.output = STATE::HIGH;
-                break;
-            }
-        }
-        break;
         
     default:
         break;
     }
+}
+
+int tmp::findchar(const std::string& string,char toFind,unsigned int occ){
+    unsigned int found = 0;
+    for (int i = 0;i < string.size();i++){
+        if (string.at(i) != toFind)
+            continue;
+        found++;
+        if (found == occ)
+            return i;
+    }
+    return -1;
 }
 
 void LogicGate::simulateOWN(unsigned int& cycle,bool status_update){
@@ -245,10 +245,16 @@ void LogicGate::simulate(unsigned int current_cycle){
     }
     for (auto&[uid,LOP] : logics){
         evaluate(LOP, current_cycle);
-    }*/
+    }
     for (auto&[uid, LOP] : pins["output"]){
         evaluate(LOP, current_cycle);
+    }*/
+    //current_cycle++;
+    for (int i = 0;i < 5;i++)
+    for (auto&[uid, LOP] : pins["output"]){
+        evaluate(LOP, current_cycle+i);
     }
+    
 }
 void LogicGate::simulateI(unsigned int current_cycle){
     //std::cout << "sim";
@@ -409,7 +415,7 @@ void JsonToGate(fs::path p, LogicGate& gate, std::string Auid){
     }
 
 }
-void getALL(std::vector<logicOperandi*>& all,logicOperandi* LOP){
+/*void getALL(std::vector<logicOperandi*>& all,logicOperandi* LOP){
     for (logicOperandi* lop : LOP->inputs){
         all.push_back(lop);
         getALL(all,lop);
@@ -442,7 +448,7 @@ void GatesToJson(LogicGate& gate, fs::path path, std::string name){
 
     /*for (logicOperandi* l : all){
         std::cout << l->uid << "\n";
-    }*/
+    }
 
     std::map<LOGIC_TYPE,int> amm;
     amm[LOGIC_TYPE::AND] = 0;
@@ -533,4 +539,4 @@ void GatesToJson(LogicGate& gate, fs::path path, std::string name){
     //file.write()
     file.close();
 
-}
+}*/

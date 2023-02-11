@@ -79,9 +79,9 @@ public:
 };
 
 void JsonToGate(fs::path,LogicGate&,std::string);
-void GatesToJson(LogicGate&,fs::path,std::string);
+//void GatesToJson(LogicGate&,fs::path,std::string);
 
 //std::vector<logicOperandi*> getALL(std::vector<logicOperandi*>);
-void getALL(std::vector<logicOperandi*>&,logicOperandi*);
+//void getALL(std::vector<logicOperandi*>&,logicOperandi*);
 
 #endif

@@ -50,4 +50,7 @@ public:
 STATE LogicalAND(STATE,STATE);
 STATE LogicalNOT(STATE);
 
+namespace tmp{
+    int findchar(const std::string& string,char toFind,unsigned int occ=1);
+};
 #endif
