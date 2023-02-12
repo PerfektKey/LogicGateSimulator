@@ -78,11 +78,6 @@ void LogicGate::addInputPin(std::string uid,std::string name){
     lop.name = name;
     pins["input"][uid] = std::move(lop);
 }
-void LogicGate::addInputCTR(std::string uid,std::string name){
-    logicOperandi lop(uid,LOGIC_TYPE::CTR,STATE::LOW);
-    lop.name = name;
-    pins["output"][uid] = lop;
-}
 std::map<std::string,logicOperandi>& LogicGate::getInputs(){
     return pins["input"];
 }
@@ -92,11 +87,6 @@ void LogicGate::addOutputPin(std::string uid){
 }
 void LogicGate::addOutputPin(std::string uid,std::string name){
     logicOperandi lop(uid,LOGIC_TYPE::PIN,STATE::LOW);
-    lop.name = name;
-    pins["output"][uid] = lop;
-}
-void LogicGate::addOutputCTR(std::string uid,std::string name){
-    logicOperandi lop(uid,LOGIC_TYPE::CTR,STATE::LOW);
     lop.name = name;
     pins["output"][uid] = lop;
 }
@@ -170,8 +160,6 @@ void LogicGate::evaluate(logicOperandi& LOP, unsigned int current_cycle){
                 break;
             }
         }
-        break;
-    case LOGIC_TYPE::CTR:// no operation
         break;
         
     default:

@@ -46,12 +46,14 @@ public:
     void setFont(fs::path);
 
     void addLabel(std::string);
+    std::vector<labelButton>& getLabels();
 
     std::string PressLabel(sf::Vector2f);
 
     void draw(sf::RenderWindow&);
 
     void scroll(long double);
+    void setScroll(long double=0);
 };
 
 #endif

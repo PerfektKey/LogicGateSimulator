@@ -17,7 +17,7 @@ enum class LOGIC_TYPE {
     NOT,
     PIN,
     ANY,
-    CTR
+//    CTR
 };
 
 std::ostream& operator<<(std::ostream&,const STATE&);

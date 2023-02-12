@@ -19,16 +19,16 @@ private:
     sf::Vector2f position;
     sf::Vector2f size;
     sf::Color color;
-
-    sf::Text labelName;
-    sf::Font labelFont;
-
+public:
     struct pin{
         logicOperandi* connectedLOP;
         std::string name;
         sf::CircleShape body;
         sf::Vector2f offset;
     };
+private:
+    sf::Text labelName;
+    sf::Font labelFont;
 
     std::vector<pin> pins;
 
@@ -52,8 +52,9 @@ public:
     std::string getName();
     LogicGate* getGate();
 
-    logicOperandi* pressedPin(sf::Vector2i pos);
+    pin* pressedPin(sf::Vector2f pos);
     LogicGate* pressedGate(sf::Vector2f pos);
+    DrawGate* pressedDrawGate(sf::Vector2f pos);
 
 };
 

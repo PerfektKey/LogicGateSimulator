@@ -1,0 +1,63 @@
+{
+	"CON" : 
+	[
+		{
+			"connects" : 
+			[
+				"test XOR-not-0"
+			],
+			"uniqueID" : "test XOR-output-0"
+		},
+		{
+			"connects" : 
+			[
+				"test XOR-and-0"
+			],
+			"uniqueID" : "test XOR-not-0"
+		},
+		{
+			"connects" : 
+			[
+				"test XOR-input-0",
+				"test XOR-input-1"
+			],
+			"uniqueID" : "test XOR-and-0"
+		}
+	],
+	"LOP" : 
+	[
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "test XOR-output-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "test XOR-not-0"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "test XOR-and-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "test XOR-input-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "test XOR-input-1"
+		}
+	],
+	"color" : 
+	[
+		125,
+		125,
+		125
+	],
+	"name" : "test XOR"
+}

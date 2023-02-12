@@ -30,12 +30,6 @@ int DrawGate::max(int a, int b){
     return (a > b) ? a : b;
 }
 
-void DrawGate::setPosition(sf::Vector2f position){
-    this->position = position;
-    labelName.setPosition(sf::Vector2f(position.x+size.x/2,position.y+size.y/2));
-    updatePins();
-}
-
 void DrawGate::setBody(){
 
     color = pgate->getColor();
@@ -122,6 +116,13 @@ sf::Vector2f DrawGate::getSize(){
 sf::Vector2f DrawGate::getPosition(){
     return position;
 }
+void DrawGate::setPosition(sf::Vector2f position){
+    this->position = position;
+    body.setPosition(position);
+    labelName.setPosition(sf::Vector2f(position.x+size.x/2,position.y+size.y/2));
+    updatePins();
+}
+
 std::string DrawGate::getName(){
     return name;
 }
@@ -129,19 +130,19 @@ LogicGate* DrawGate::getGate(){
     return pgate;
 }
 
-logicOperandi* DrawGate::pressedPin(sf::Vector2i pos){
+DrawGate::pin* DrawGate::pressedPin(sf::Vector2f pos){
     for (pin& p : pins){
         float dis = sqrt(pow(p.body.getPosition().x-pos.x,2)+pow(p.body.getPosition().y-pos.y,2));
         if (dis < 2*pinSize){
-            return p.connectedLOP;
+            return &p;
         }
     }
     return nullptr;
 }
-LogicGate* DrawGate::pressedGate(sf::Vector2f pos){
+DrawGate* DrawGate::pressedDrawGate(sf::Vector2f pos){
     //sf::FloatRect rect = body.getLocalBounds();
     if (position.x < pos.x && position.x+size.x > pos.x && position.y < pos.y && position.y+size.y > pos.y)
-        return pgate;
+        return this;
     return nullptr;
 }
 
@@ -158,5 +159,6 @@ void DrawGate::draw(sf::RenderWindow& win,bool update){
             p.body.setFillColor(sf::Color::Red);
         win.draw(p.body);
     }
+
     win.draw(labelName);
 }

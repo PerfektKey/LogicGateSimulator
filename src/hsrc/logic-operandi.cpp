@@ -9,8 +9,6 @@ std::ostream& operator<<(std::ostream& stream,const LOGIC_TYPE& other){
         stream << "and type";
     if (other == LOGIC_TYPE::NOT)
         stream << "not type";
-    if (other == LOGIC_TYPE::CTR)
-        stream << "controll type";
     if (other == LOGIC_TYPE::PIN)
         stream << "pin type";
     if (other == LOGIC_TYPE::ANY)

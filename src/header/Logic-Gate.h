@@ -54,11 +54,9 @@ public:
 
     void addOutputPin(std::string);
     void addOutputPin(std::string,std::string);
-    void addOutputCTR(std::string,std::string);
     std::map<std::string,logicOperandi>& getOutputs();
     void addInputPin(std::string);
     void addInputPin(std::string,std::string);
-    void addInputCTR(std::string,std::string);
     std::map<std::string,logicOperandi>& getInputs();
 
     void setOutput(STATE);

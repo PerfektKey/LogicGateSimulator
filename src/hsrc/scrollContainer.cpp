@@ -3,9 +3,11 @@
 scrollContainer::scrollContainer(sf::Vector2f _position,sf::Vector2f _size){
     __position = _position;
     __size = _size;
+    _scroll = 0;
     updateBody();
 }
 scrollContainer::scrollContainer(){
+    _scroll = 0;
     return;
 }
 
@@ -59,6 +61,10 @@ void scrollContainer::addLabel(std::string name){
     //lbr->labelName.setFont(lbr->labelFont);
 }
 
+std::vector<scrollContainer::labelButton>& scrollContainer::getLabels(){
+    return __labels;
+}
+
 std::string scrollContainer::PressLabel(sf::Vector2f point){
     for (labelButton& LB : __labels){
         if (LB.body.getSize().x+(LB.position.x-_scroll) > __position.x){
@@ -76,6 +82,9 @@ void scrollContainer::scroll(long double amm){
         _scroll += amm;
     //if (_scroll+amm > _min_scroll && _scroll-amm < _max_scroll)
     //    _scroll += amm;
+}
+void scrollContainer::setScroll(long double __scroll){
+    _scroll = __scroll;
 }
 
 void scrollContainer::updateBody(){

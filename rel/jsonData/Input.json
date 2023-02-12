@@ -5,7 +5,7 @@
         {
             "name" : "Out",
             "uniqueID" : "button-output-0",
-            "type" : "CTR",
+            "type" : "PIN",
             "direction" : "output"
         }
     ],
