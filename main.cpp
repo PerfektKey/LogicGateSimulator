@@ -375,6 +375,8 @@ std::string getNewId(const std::map<std::string,std::string>& map, std::string i
 
 void getALL(std::vector<logicOperandi*>& all,logicOperandi* LOP){
     for (logicOperandi* lop : LOP->inputs){
+        if (std::find(all.begin(),all.end(),lop) != all.end())
+            continue;
         all.push_back(lop);
         getALL(all,lop);
     }
