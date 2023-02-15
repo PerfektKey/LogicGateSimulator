@@ -1,4 +1,4 @@
-#include "../header/DrawGate.h"
+#include "../header/gate/DrawGate.h"
 
 DrawGate::DrawGate(LogicGate* pg){
     pgate = pg;
@@ -42,7 +42,7 @@ void DrawGate::setBody(){
     this->size = sf::Vector2f(CharSize*name.size()*1,sizeGate);
 
     std::string lfp = fs::current_path().generic_string();
-    lfp += "\\ARCADECLASSIC.TTF";
+    lfp += "\\MAIN_FONT.TTF";
     labelFont.loadFromFile(lfp);
 
     labelName.setFont(labelFont);

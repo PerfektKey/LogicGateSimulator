@@ -1,0 +1,165 @@
+{
+	"CON" : 
+	[
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-0"
+			],
+			"uniqueID" : "SR-LATCH-output-0"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-4"
+			],
+			"uniqueID" : "SR-LATCH-output-1"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-1"
+			],
+			"uniqueID" : "SR-LATCH-not-0"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-and-0"
+			],
+			"uniqueID" : "SR-LATCH-not-1"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-2",
+				"SR-LATCH-not-3"
+			],
+			"uniqueID" : "SR-LATCH-and-0"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-input-0"
+			],
+			"uniqueID" : "SR-LATCH-not-2"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-4"
+			],
+			"uniqueID" : "SR-LATCH-not-3"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-5"
+			],
+			"uniqueID" : "SR-LATCH-not-4"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-and-1"
+			],
+			"uniqueID" : "SR-LATCH-not-5"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-6",
+				"SR-LATCH-not-7"
+			],
+			"uniqueID" : "SR-LATCH-and-1"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-not-0"
+			],
+			"uniqueID" : "SR-LATCH-not-6"
+		},
+		{
+			"connects" : 
+			[
+				"SR-LATCH-input-1"
+			],
+			"uniqueID" : "SR-LATCH-not-7"
+		}
+	],
+	"LOP" : 
+	[
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "SR-LATCH-output-0"
+		},
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "SR-LATCH-output-1"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-1"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "SR-LATCH-and-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-2"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "SR-LATCH-input-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-3"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-4"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-5"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "SR-LATCH-and-1"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-6"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "SR-LATCH-not-7"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "SR-LATCH-input-1"
+		}
+	],
+	"color" : 
+	[
+		125,
+		125,
+		125
+	],
+	"name" : "SR-LATCH"
+}

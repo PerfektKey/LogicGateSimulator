@@ -1,4 +1,4 @@
-#include "../header/logic-operandi.h"
+#include "../header/gate/logic-operandi.h"
 
 std::ostream& operator<<(std::ostream& stream,const STATE& other){
     stream << ((other== STATE::HIGH) ? 1 : 0);

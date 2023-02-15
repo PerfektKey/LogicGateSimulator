@@ -1,4 +1,4 @@
-#include "../header/Logic-Gate.h"
+#include "../header/gate/Logic-Gate.h"
 
 
 LogicGate::LogicGate(){

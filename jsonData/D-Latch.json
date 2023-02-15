@@ -1,0 +1,187 @@
+{
+	"CON" : 
+	[
+		{
+			"connects" : 
+			[
+				"D-Latch-not-0"
+			],
+			"uniqueID" : "D-Latch-output-0"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-not-1"
+			],
+			"uniqueID" : "D-Latch-not-0"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-and-0"
+			],
+			"uniqueID" : "D-Latch-not-1"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-not-2",
+				"D-Latch-not-7"
+			],
+			"uniqueID" : "D-Latch-and-0"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-not-3"
+			],
+			"uniqueID" : "D-Latch-not-2"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-not-4"
+			],
+			"uniqueID" : "D-Latch-not-3"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-and-1"
+			],
+			"uniqueID" : "D-Latch-not-4"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-not-5",
+				"D-Latch-not-6"
+			],
+			"uniqueID" : "D-Latch-and-1"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-and-2"
+			],
+			"uniqueID" : "D-Latch-not-5"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-input-0",
+				"D-Latch-input-1"
+			],
+			"uniqueID" : "D-Latch-and-2"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-not-0"
+			],
+			"uniqueID" : "D-Latch-not-6"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-and-3"
+			],
+			"uniqueID" : "D-Latch-not-7"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-input-0",
+				"D-Latch-not-8"
+			],
+			"uniqueID" : "D-Latch-and-3"
+		},
+		{
+			"connects" : 
+			[
+				"D-Latch-input-1"
+			],
+			"uniqueID" : "D-Latch-not-8"
+		}
+	],
+	"LOP" : 
+	[
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "D-Latch-output-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-1"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "D-Latch-and-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-2"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-3"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-4"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "D-Latch-and-1"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-5"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "D-Latch-and-2"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "D-Latch-input-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "D-Latch-input-1"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-6"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-7"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "D-Latch-and-3"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "D-Latch-not-8"
+		}
+	],
+	"color" : 
+	[
+		125,
+		125,
+		125
+	],
+	"name" : "D-Latch"
+}

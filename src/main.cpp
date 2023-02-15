@@ -4,18 +4,16 @@
 #include <json/value.h>
 #include <json/json.h>
 
+#include <filesystem>
+namespace fs = std::filesystem;
 
-//#define INSRC 1
+#define INSRC 1
 #ifdef INSRC
-#include "header/Logic-Gate.h"
-#include "header/logic-operandi.h"
-#include "header/DrawGate.h"
-#include "header/scrollContainer.h"
+#include "header/Gate.h"
+#include "header/UI.h"
 #else
-#include "src/header/Logic-Gate.h"
-#include "src/header/logic-operandi.h"
-#include "src/header/DrawGate.h"
-#include "src/header/scrollContainer.h"
+#include "src/header/Gate.h"
+#include "src/header/UI.h"
 #endif
 #include <iostream>
 #include <fstream>
@@ -92,6 +90,7 @@ std::vector<DrawGate*> inputs;
 std::vector<DrawGate*> outputs;
 
 //std::vector<DrawGate*> ;
+std::vector<DrawGate*> newGDG;
 std::vector<DrawGate*> moveDG;
 
 
@@ -106,6 +105,12 @@ unsigned long long i = 1;
 
 void sim();
 int findchar(const std::string&,char,unsigned int);
+bool findString(const std::string&,const std::string&);
+
+
+/*
+Better Gate creating window
+*/
 
 int main(){
     fs::path p;
@@ -116,7 +121,7 @@ int main(){
     Datapath += "\\jsonData";
 
     fontFullpath = fs::current_path();
-    fontFullpath += "\\ARCADECLASSIC.TTF";
+    fontFullpath += "\\MAIN_FONT.TTF";
 
 
     std::map<std::string,unsigned int> GateId;
@@ -124,7 +129,7 @@ int main(){
     sf::RenderWindow window(sf::VideoMode(1000,800),"LIFE ENGINE");
     sf::RectangleShape bg;
     bg.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
-    bg.setFillColor(sf::Color(100,100,100));
+    bg.setFillColor(sf::Color(50,50,50));
 
     scrollContainer SC(sf::Vector2f(0,window.getSize().y*.9),sf::Vector2f(window.getSize().x,window.getSize().y*.1));
     SC.setColor(sf::Color(50,50,50));
@@ -144,19 +149,74 @@ int main(){
     logicOperandi* toLOP = nullptr;
     sf::Vector2f toPos;
 
-    while(window.isOpen()){
+    bool inProcessOfCreatingNewGate = false;
 
+    std::map<sf::Keyboard::Key,bool> keyPressed;
+
+
+    BaseContainer cont;
+
+    std::string NewGateName;
+    Label NGL;
+    NGL.loadFont(fontFullpath);
+    NGL.setCharSize(48);
+    NGL.setOrigin(UIBASE::CENTER);
+
+    Button NGB;
+    NGB.setColor(sf::Color(150,150,150));
+    NGB.setSize(sf::Vector2f(300,50));
+    NGB.setOrigin(UIBASE::RIGHTDOWN);
+
+    cont.addRef(&NGL);
+    cont.addRef(&NGB);
+
+    cont.setColor(sf::Color(100,100,100));
+    cont.setGlobalPosition(sf::Vector2f(window.getSize().x/2,window.getSize().y/2));
+    cont.setSize(sf::Vector2f(window.getSize().x*.5,window.getSize().y*.5));
+    cont.setOrigin(UIBASE::CENTER);
+
+    cont.setLocalPositionOfUI(NGL,sf::Vector2f(20,20));
+    cont.setLocalPositionOfUI(NGB,cont.getSize() - sf::Vector2f(20,20));
+
+    sf::Vector2f oldMousePosition{0,0};
+    sf::Vector2f moveDGClickPosition{0,0};
+    /*
+    working on moving gates better
+    use the same method as now just set moveDGClickPosition to the mouse position everytime a new gate is clicked and moved
+    
+    */
+
+    while(window.isOpen()){
+        sf::Vector2f mouse_pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
 
         sf::Event event;
         while( window.pollEvent( event ) ){
-
             if (event.type == sf::Event::Closed)    window.close();
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)){
-                int i[3]{125,125,125};
-                GatesToJson(Datapath,"test XOR", i );
-                std::cout << "key N pressed\n";
+            
+            if (inProcessOfCreatingNewGate){
+                if (event.type == sf::Event::TextEntered) {
+                    if (event.text.unicode == '\b')
+                        NewGateName.erase(NewGateName.size() - 1, 1);
+                    else if (event.text.unicode < 128)
+                        NewGateName += event.text.unicode;
+                    NGL.setString(NewGateName);
+                }
+                if (NGB.isPressed(mouse_pos,event) && NewGateName != ""){
+                    inProcessOfCreatingNewGate = false;
+                    int i[3]{125,125,125};
+                    GatesToJson(Datapath,NewGateName, i );
+                    SC.addLabel(NewGateName);
+                    NewGateName.clear();
+                }
             }
-            if (event.type == sf::Event::MouseButtonPressed){
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::N) && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)
+                && !keyPressed[sf::Keyboard::N]) {
+                keyPressed[sf::Keyboard::N] = true;
+                inProcessOfCreatingNewGate = true;
+            }
+            if (!sf::Keyboard::isKeyPressed(sf::Keyboard::N))
+                keyPressed[sf::Keyboard::N] = false;
+            if (event.type == sf::Event::MouseButtonPressed && !inProcessOfCreatingNewGate){
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                     DrawGate* pressedDRP = nullptr;
                     //DrawGate* pressedDRInput = nullptr;
@@ -164,7 +224,6 @@ int main(){
                     bool pressedDRInput = false;
                     bool pressedFromPin = fromLOP != nullptr;
                     bool pressedToPin = toLOP != nullptr;
-                    sf::Vector2f mouse_pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
                     
                     std::string GateName = SC.PressLabel(mouse_pos);
                     if (GateName != ""){
@@ -178,19 +237,21 @@ int main(){
     
                         if (GateName == "Input"){
                             inputs.push_back(ndrg);
-                            moveDG.push_back(ndrg);
+                            newGDG.push_back(ndrg);
                         }else
                         if (GateName == "Output"){
                             outputs.push_back(ndrg);
-                            moveDG.push_back(ndrg);                    
+                            newGDG.push_back(ndrg);                    
                             }else{
                             gates.push_back(ndrg);
-                            moveDG.push_back(ndrg);
+                            newGDG.push_back(ndrg);
                         }
                         GateId[GateName]++;
+                        sim();
                         goto endLeftClick;
                     }
-                    if (moveDG.size() > 0)
+
+                    if (newGDG.size() > 0)
                         goto clearMoveDR;
                     
                     for (DrawGate* dr : inputs){
@@ -235,21 +296,16 @@ int main(){
                             DrawGate::pin* tmp = dr->pressedPin(mouse_pos);
                             if (tmp != nullptr){
                                 logicOperandi* lop = tmp->connectedLOP;
-                                int start = findchar(lop->uid,'-',1) + 1;
-                                int lenght = findchar(lop->uid,'-',2) - findchar(lop->uid,'-',1) - 1;
-                                if (start == 0 || lenght < 0)
-                                    continue;
-                                std::string tmpStr = lop->uid.substr(start,lenght);
-                                if (tmpStr == "input" && !pressedToPin){
+                                if (findString(lop->uid,"input") && !pressedToPin){
                                     toLOP = lop;
                                     toPos = tmp->body.getPosition();
                                     pressedToPin = true;
-                                }else if (tmpStr == "output" && !pressedFromPin){
+                                }else if (findString(lop->uid,"output") && !pressedFromPin){
                                     fromLOP = lop;
                                     fromPos = tmp->body.getPosition();
                                     pressedFromPin = true;
                                 }else
-                                    std::cout << "[error] cant decide if input or output: " << lop->uid << " found: " << tmpStr << "\n";
+                                    std::cout << "[error] cant decide if input or output in pin from" << lop->uid << "\n";
                             }
                         }
                         if (!pressedDR){
@@ -263,12 +319,16 @@ int main(){
 
 
                     if (pressedDR){
-                        if (pressedDRInput){
+                        if (pressedDRInput && !sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
                             for (auto&[uid,lop] : pressedDRP->getGate()->getOutputs()){
                                 lop.output = LogicalNOT(lop.output);
                                 sim();
                                 //break;
                             }
+                        }
+                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
+                            std::cout << "move gate\n";
+                            moveDG.push_back(pressedDRP);
                         }
                     }
                     std::cout << pressedDR << pressedDRInput << pressedFromPin << pressedToPin << std::endl;
@@ -280,12 +340,16 @@ int main(){
                             cl.from = fromLOP;
                             cl.to = toLOP;
                             cables.push_back(cl);
+                            sim();
                         }else
                             std::cout << fromLOP->uid << " is already connected to " << toLOP->uid << std::endl;
                         toLOP = nullptr;fromLOP = nullptr;
                     }
                 clearMoveDR:
                     if (pressedDR == false,pressedDRInput == false, pressedFromPin == false, pressedToPin == false){
+                        newGDG.clear();
+                    }
+                    if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)){
                         moveDG.clear();
                     }
                 }
@@ -309,11 +373,16 @@ int main(){
         window.draw(bg);
         SC.draw(window);
         sf::Vector2f positionAdd = sf::Vector2f(0,0);
-        for (DrawGate* dg : moveDG){
+        for (DrawGate* dg : newGDG){
             dg->setPosition(sf::Vector2f(sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y) + positionAdd);
             positionAdd += dg->getSize();
             positionAdd.y += 5;
             positionAdd.x = 0;
+        }
+        for (DrawGate* dg : moveDG){
+            sf::Vector2f addPos = oldMousePosition-mouse_pos;
+            sf::Vector2f dgPos = dg->getPosition();
+            dg->setPosition(dgPos-addPos);
         }
         for (DrawGate* dg : inputs){
             dg->draw(window);
@@ -332,8 +401,12 @@ int main(){
                 cl.line.setFillColor(sf::Color::Red);
             window.draw(cl.line);
         }
+        if (inProcessOfCreatingNewGate){
+            cont.draw(window);
+        }
         window.display();
 
+        oldMousePosition = mouse_pos;
 
     }
 
@@ -353,6 +426,30 @@ void sim(){
         }
     i++;
 }
+
+bool findString(const std::string& baseString,const std::string& stringToFind){
+    unsigned int lenght = 0;
+    unsigned int start = 0;
+    if (baseString.size() < stringToFind.size())
+        return false;
+    
+    while (start != baseString.size()){
+        for (int i = 0;i < stringToFind.size();i++){
+            if (baseString[i+start] == stringToFind[i])
+                lenght++;
+            else{
+                lenght = 0;
+                start++;
+                break;
+            }
+        }
+        if (lenght == stringToFind.size())
+            return true;
+    }
+
+    return false;
+}
+
 
 int findchar(const std::string& string,char toFind,unsigned int occ){
     unsigned int found = 0;
