@@ -1,5 +1,4 @@
 #include <iostream>
-#include <memory>
 #include <SFML/Graphics.hpp>
 #include <jsoncpp/json/value.h>
 #include <jsoncpp/json/json.h>
