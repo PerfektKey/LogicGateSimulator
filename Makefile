@@ -5,17 +5,18 @@ CPPFILES=$(foreach D,$(SRC)/hsrc,$(wildcard $(D)/*.cpp))
 OBJFILES=$(patsubst %.cpp,%.o,$(CPPFILES))
 
 FLAGS= -Wall
-INCLUDES = -lstdc++fs -std=c++17 -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
+OINCLUDES = -lstdc++fs -std=c++20 
+INCLUDES = -lstdc++fs -std=c++20 -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
 
-all:main.exe run
+all:main run
 
-main.exe: main.o $(OBJFILES)
-	$(CC) $(FLAGS) $(BIN)/*.o -o $(BIN)/main.exe $(INCLUDES)
+main: main.o $(OBJFILES)
+	$(CC) $(FLAGS) $(BIN)/*.o -o $(BIN)/main $(INCLUDES)
 
 %.o:%.cpp
-	g++ -o $(patsubst src/hsrc/%.cpp,bin/%.o,$<) -c $<
+	g++ -o $(patsubst src/hsrc/%.cpp,bin/%.o,$<) -c $< $(OINCLUDES)
 main.o:$(SRC)/main.cpp
-	$(CC) -o $(BIN)/main.o -c $(SRC)/main.cpp
+	$(CC) -o $(BIN)/main.o -c $(SRC)/main.cpp $(OINCLUDES)
 
 release:$(BIN)/main.exe
 	@mkdir -p rel
