@@ -1,0 +1,63 @@
+{
+	"CON" : 
+	[
+		{
+			"connects" : 
+			[
+				"NAND-0-not-0"
+			],
+			"uniqueID" : "NAND-0-output-0"
+		},
+		{
+			"connects" : 
+			[
+				"NAND-0-and-0"
+			],
+			"uniqueID" : "NAND-0-not-0"
+		},
+		{
+			"connects" : 
+			[
+				"NAND-0-input-0",
+				"NAND-0-input-1"
+			],
+			"uniqueID" : "NAND-0-and-0"
+		}
+	],
+	"LOP" : 
+	[
+		{
+			"direction" : "output",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "NAND-0-output-0"
+		},
+		{
+			"type" : "NOT",
+			"uniqueID" : "NAND-0-not-0"
+		},
+		{
+			"type" : "AND",
+			"uniqueID" : "NAND-0-and-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "NAND-0-input-0"
+		},
+		{
+			"direction" : "input",
+			"name" : "Out",
+			"type" : "PIN",
+			"uniqueID" : "NAND-0-input-1"
+		}
+	],
+	"color" : 
+	[
+		125,
+		125,
+		125
+	],
+	"name" : "NAND-0"
+}

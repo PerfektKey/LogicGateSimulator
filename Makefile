@@ -8,7 +8,7 @@ FLAGS= -Wall
 OINCLUDES = -lstdc++fs -std=c++20 
 INCLUDES = -lstdc++fs -std=c++20 -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
 
-all:main run
+all:main
 
 main: main.o $(OBJFILES)
 	$(CC) $(FLAGS) $(BIN)/*.o -o $(BIN)/main $(INCLUDES)
