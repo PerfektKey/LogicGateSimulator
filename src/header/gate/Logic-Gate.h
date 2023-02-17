@@ -8,8 +8,8 @@
 #include <fstream>
 #include <filesystem>
 namespace fs = std::filesystem;
-#include <json/json.h>
-#include <json/value.h>
+#include <jsoncpp/json/value.h>
+#include <jsoncpp/json/json.h>
 
 #include <SFML/Graphics.hpp>
 

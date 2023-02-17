@@ -1,8 +1,8 @@
 #include <iostream>
 #include <memory>
 #include <SFML/Graphics.hpp>
-#include <json/value.h>
-#include <json/json.h>
+#include <jsoncpp/json/value.h>
+#include <jsoncpp/json/json.h>
 
 #include <filesystem>
 namespace fs = std::filesystem;
@@ -117,13 +117,13 @@ Better Gate creating window
 int main(){
     fs::path p;
     p = fs::current_path();
-    p += "\\jsonData\\and.json";
+    p += "/jsonData/and.json";
 
     Datapath = fs::current_path();
-    Datapath += "\\jsonData";
+    Datapath += "/jsonData";
 
     fontFullpath = fs::current_path();
-    fontFullpath += "\\MAIN_FONT.TTF";
+    fontFullpath += "/MAIN_FONT.TTF";
 
 
     std::map<std::string,unsigned int> GateId;
@@ -250,7 +250,7 @@ int main(){
 
                         LogicGate* tmp = new LogicGate();
                         HiddenGates.push_back(LogicGate());
-                        fs::path tmpFullPath = Datapath;tmpFullPath.concat("\\");tmpFullPath.concat(GateName);tmpFullPath.concat(".json");
+                        fs::path tmpFullPath = Datapath;tmpFullPath.concat("/");tmpFullPath.concat(GateName);tmpFullPath.concat(".json");
                         JsonToGate(tmpFullPath,*tmp,"-"+std::to_string(GateId[GateName]));
 
                         DrawGate* ndrg = new DrawGate(tmp);
@@ -640,7 +640,7 @@ void GatesToJson(fs::path path, std::string name,int color[3]){
 
 
     std::ofstream file;
-    file.open(path.concat("\\"+name+".json"), std::ios::trunc);
+    file.open(path.concat("/"+name+".json"), std::ios::trunc);
     file << json_file;
     //file.write()
     file.close();
