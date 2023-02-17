@@ -5,7 +5,7 @@ CPPFILES=$(foreach D,$(SRC)/hsrc,$(wildcard $(D)/*.cpp))
 OBJFILES=$(patsubst %.cpp,%.o,$(CPPFILES))
 
 FLAGS= -Wall
-INCLUDES = -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
+INCLUDES = -lstdc++fs -std=c++17 -lsfml-graphics -lsfml-window -lsfml-system -ljsoncpp
 
 all:main.exe run
 

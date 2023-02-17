@@ -75,6 +75,8 @@ struct cable{//struct for the cable that connects gates
     sfLine line = sfLine();
     logicOperandi* from;
     logicOperandi* to;
+    DrawGate::pin* fromPIN;
+    DrawGate::pin* toPIN;
 public:
     cable(sf::Vector2f fromPos, sf::Vector2f toPos, unsigned int thickness=5){
         line = sfLine(fromPos,toPos,thickness);
@@ -145,8 +147,10 @@ int main(){
 
 
     logicOperandi* fromLOP = nullptr;
+    DrawGate::pin* fromPIN = nullptr;
     sf::Vector2f fromPos;
     logicOperandi* toLOP = nullptr;
+    DrawGate::pin* toPIN = nullptr;
     sf::Vector2f toPos;
 
     bool inProcessOfCreatingNewGate = false;
@@ -178,7 +182,7 @@ int main(){
     cont.setLocalPositionOfUI(NGL,sf::Vector2f(20,20));
     cont.setLocalPositionOfUI(NGB,cont.getSize() - sf::Vector2f(20,20));
 
-    sf::Vector2f oldMousePosition{0,0};
+    sf::Vector2f moveDGoldMousePosition{0,0};
     sf::Vector2f moveDGClickPosition{0,0};
     /*
     working on moving gates better
@@ -203,19 +207,35 @@ int main(){
                 }
                 if (NGB.isPressed(mouse_pos,event) && NewGateName != ""){
                     inProcessOfCreatingNewGate = false;
+                    NewGateName += "-" + std::to_string(GateId[NewGateName]);
                     int i[3]{125,125,125};
                     GatesToJson(Datapath,NewGateName, i );
                     SC.addLabel(NewGateName);
                     NewGateName.clear();
                 }
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::N) && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)
-                && !keyPressed[sf::Keyboard::N]) {
+            for (auto&[key,val] : keyPressed)
+                if (!sf::Keyboard::isKeyPressed(key))
+                    keyPressed[key] = false;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::N) && !keyPressed[sf::Keyboard::N] && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)){//deleting all gates if the user wishes so
+                for (DrawGate* dr : inputs)
+                    delete dr;
+                inputs.clear();
+                for (DrawGate* dr : outputs)
+                    delete dr;
+                outputs.clear();
+                for (DrawGate* dr : gates)
+                    delete dr;
+                gates.clear();
+                HiddenGates.clear();
+                cables.clear();
                 keyPressed[sf::Keyboard::N] = true;
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)
+                && !keyPressed[sf::Keyboard::S]) {
+                keyPressed[sf::Keyboard::S] = true;
                 inProcessOfCreatingNewGate = true;
             }
-            if (!sf::Keyboard::isKeyPressed(sf::Keyboard::N))
-                keyPressed[sf::Keyboard::N] = false;
             if (event.type == sf::Event::MouseButtonPressed && !inProcessOfCreatingNewGate){
                 if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
                     DrawGate* pressedDRP = nullptr;
@@ -260,6 +280,7 @@ int main(){
                             if ( tmp != nullptr ){
                                 pressedFromPin = true;
                                 fromLOP = tmp->connectedLOP;
+                                fromPIN = tmp;
                                 fromPos = tmp->body.getPosition();
                             }
                         }
@@ -278,6 +299,7 @@ int main(){
                             if ( tmp != nullptr ){
                                 pressedToPin = true;
                                 toLOP = tmp->connectedLOP;
+                                toPIN = tmp;
                                 toPos = tmp->body.getPosition();
                             }
                         }
@@ -298,10 +320,12 @@ int main(){
                                 logicOperandi* lop = tmp->connectedLOP;
                                 if (findString(lop->uid,"input") && !pressedToPin){
                                     toLOP = lop;
+                                    toPIN = tmp;
                                     toPos = tmp->body.getPosition();
                                     pressedToPin = true;
                                 }else if (findString(lop->uid,"output") && !pressedFromPin){
                                     fromLOP = lop;
+                                    fromPIN = tmp;
                                     fromPos = tmp->body.getPosition();
                                     pressedFromPin = true;
                                 }else
@@ -332,18 +356,21 @@ int main(){
                         }
                     }
                     std::cout << pressedDR << pressedDRInput << pressedFromPin << pressedToPin << std::endl;
-                    if (pressedFromPin && pressedToPin){
+                    if (pressedFromPin && pressedToPin){//connecting gates
                         if (std::find(toLOP->inputs.begin(),toLOP->inputs.end(),fromLOP) == toLOP->inputs.end()){
                             std::cout << "connecting " << fromLOP->uid << " to " << toLOP->uid << std::endl;
                             toLOP->inputs.push_back(fromLOP);
                             cable cl(fromPos,toPos);
                             cl.from = fromLOP;
                             cl.to = toLOP;
+                            cl.fromPIN = fromPIN;
+                            cl.toPIN = toPIN;
                             cables.push_back(cl);
                             sim();
                         }else
                             std::cout << fromLOP->uid << " is already connected to " << toLOP->uid << std::endl;
                         toLOP = nullptr;fromLOP = nullptr;
+                        fromPIN = nullptr;fromPIN = nullptr;
                     }
                 clearMoveDR:
                     if (pressedDR == false,pressedDRInput == false, pressedFromPin == false, pressedToPin == false){
@@ -380,7 +407,7 @@ int main(){
             positionAdd.x = 0;
         }
         for (DrawGate* dg : moveDG){
-            sf::Vector2f addPos = oldMousePosition-mouse_pos;
+            sf::Vector2f addPos = moveDGoldMousePosition-mouse_pos;
             sf::Vector2f dgPos = dg->getPosition();
             dg->setPosition(dgPos-addPos);
         }
@@ -394,6 +421,8 @@ int main(){
             dg->draw(window);
         }
         for (cable& cl : cables){
+            if (moveDG.size() > 0)
+                cl.line.setPosition(cl.fromPIN->body.getPosition(),cl.toPIN->body.getPosition());
             cl.line.setFillColor(sf::Color::Black);
             if (cl.from->output == STATE::HIGH)
                 cl.line.setFillColor(sf::Color::Green);
@@ -406,7 +435,7 @@ int main(){
         }
         window.display();
 
-        oldMousePosition = mouse_pos;
+        moveDGoldMousePosition = mouse_pos;
 
     }
 
