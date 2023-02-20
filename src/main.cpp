@@ -1,5 +1,4 @@
 #include <iostream>
-#include <memory>
 #include <SFML/Graphics.hpp>
 #include <jsoncpp/json/value.h>
 #include <jsoncpp/json/json.h>
@@ -132,7 +131,6 @@ int main(){
     fontFullpath = fs::current_path();
     fontFullpath += "/MAIN_FONT.TTF";
 
-
     std::map<std::string,unsigned int> GateId;
 
     sf::RenderWindow window(sf::VideoMode(1000,800),"Logic Gate Simulator");
@@ -238,7 +236,7 @@ int main(){
                 }
                 if (NGB.isPressed(mouse_pos,event) && NewGateName != ""){
                     inProcessOfCreatingNewGate = false;
-                    NewGateName += "-" + std::to_string(GateId[NewGateName]);
+                    //NewGateName += "-" + std::to_string(GateId[NewGateName]);
                     int i[3]{125,125,125};
                     GatesToJson(Datapath,NewGateName, i );
                     SC.addLabel(NewGateName);
