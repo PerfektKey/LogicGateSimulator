@@ -83,7 +83,6 @@ public:
     }
 };
 
-
 std::vector<cable> cables;
 
 std::vector<LogicGate> HiddenGates;
@@ -114,6 +113,14 @@ bool findString(const std::string&,const std::string&);
 Better Gate creating window
 */
 
+std::ostream& operator<<(std::ostream& stream,const sf::Vector2f& vec){
+    stream << "(" << vec.x << "," << vec.y << ")";
+    return stream;
+}
+sf::Vector2f operator/(const sf::Vector2f& a, const float b){
+    return sf::Vector2f(a.x/b,a.y/b);
+}
+
 int main(){
     fs::path p;
     p = fs::current_path();
@@ -128,15 +135,15 @@ int main(){
 
     std::map<std::string,unsigned int> GateId;
 
-    sf::RenderWindow window(sf::VideoMode(1000,800),"LIFE ENGINE");
-    sf::RectangleShape bg;
-    bg.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
-    bg.setFillColor(sf::Color(50,50,50));
+    sf::RenderWindow window(sf::VideoMode(1000,800),"Logic Gate Simulator");
+    sf::View cam(sf::Vector2f(window.getSize().x/2,window.getSize().y/2), sf::Vector2f(window.getSize().x,window.getSize().y));;
+    sf::Vector2f camSpeed{25,25};
 
     scrollContainer SC(sf::Vector2f(0,window.getSize().y*.9),sf::Vector2f(window.getSize().x,window.getSize().y*.1));
     SC.setColor(sf::Color(50,50,50));
     SC.setScroll();
-
+    //SC.setPosition(cam.getCenter() - sf::Vector2f(cam.getSize().x/2,-cam.getSize().y/2));
+    SC.setPosition(cam.getCenter() - sf::Vector2f(cam.getSize().x/2,cam.getSize().y/2-cam.getSize().y*.9));
     std::cout << fontFullpath << "\n";
     SC.setFont(fontFullpath);
     for(const auto& dirEntry : fs::recursive_directory_iterator(Datapath)){
@@ -196,6 +203,30 @@ int main(){
         sf::Event event;
         while( window.pollEvent( event ) ){
             if (event.type == sf::Event::Closed)    window.close();
+
+            if (event.type == sf::Event::Resized){
+                cam.setSize({static_cast<float>(event.size.width),static_cast<float>(event.size.height)});
+                cam.setCenter({static_cast<float>(event.size.width)/2,static_cast<float>(event.size.height)/2});
+                window.setView(cam);
+                //sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                //window.setView(sf::View(visibleArea));
+            }
+            if (event.type == sf::Event::KeyPressed){
+                std::cout << "view info :\n\told:" << cam.getCenter() << "," << cam.getRotation() << "," << cam.getSize() << std::endl; 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                    cam.move(0,-camSpeed.y);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                    cam.move(0,camSpeed.y);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+                    cam.move(-camSpeed.x,0);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                    cam.move(camSpeed.x,0);
+                SC.setPosition(cam.getCenter() - sf::Vector2f(cam.getSize().x/2,cam.getSize().y/2-cam.getSize().y*.9));
+                window.setView(cam);
+
+                std::cout << "\tnew:" << cam.getCenter() << "," << cam.getRotation() << "," << cam.getSize() << std::endl;
+
+            }
             
             if (inProcessOfCreatingNewGate){
                 if (event.type == sf::Event::TextEntered) {
@@ -387,17 +418,18 @@ int main(){
                 }
             }
             if(event.type == sf::Event::MouseWheelScrolled){
-                if (event.mouseWheelScroll.delta == 1)
-                    SC.scroll(25);
-                else if (event.mouseWheelScroll.delta == -1)
-                    SC.scroll(-25);
+                if (SC.inside(mouse_pos))
+                    if (event.mouseWheelScroll.delta == 1)
+                        SC.scroll(25);
+                    else if (event.mouseWheelScroll.delta == -1)
+                        SC.scroll(-25);
             }
         }
 
         //sim();
 
-        window.clear();
-        window.draw(bg);
+        window.clear(sf::Color(50,50,50));
+        //window.draw(bg);
         SC.draw(window);
         sf::Vector2f positionAdd = sf::Vector2f(0,0);
         for (DrawGate* dg : newGDG){

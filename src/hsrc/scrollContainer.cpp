@@ -20,24 +20,29 @@ void scrollContainer::setFont(fs::path path){
         std::cout << "unable to load font for scrollContainer( " << this << " ) from: " << path << "\n";
 }
 
+void scrollContainer::setPosition(float _x, float _y){
+    __position.x = _x;
+    __position.y = _y;
+    updateLabels();
+}
+void scrollContainer::setPosition(sf::Vector2f _p){
+    __position = _p;
+    updateLabels();
+}
+
 void scrollContainer::addLabel(std::string name){
     labelButton lb;
     lb.name = name;
-    //lb.labelFont.loadFromFile(font.generic_string());
     lb.labelName.setFont(labelFont);
     lb.labelName.setString(name);
     lb.labelName.setCharacterSize(CharSize);
-    //lb.labelName.setFillColor(sf::Color::Black);
     sf::FloatRect textRect = lb.labelName.getLocalBounds();
-    //lb.labelName.setOrigin(textRect.left + textRect.width/2.0f,
-    //           textRect.top  + textRect.height/2.0f);
     sf::Vector2f tmp;
     sf::Vector2f tmpS;
-    std::cout << "name: " << name << " lenght = " << name.length() << " size = " << name.size() << "\n";
+    //std::cout << "name: " << name << " lenght = " << name.length() << " size = " << name.size() << "\n";
     tmpS.x = textRect.width;
     tmpS.y = textRect.height;
     tmp = sf::Vector2f(name.length()*CharSize,__size.y*.9);
-    //std::cout << "rect size = " << tmp.x << "\n";
     if (__labels.size() == 0){
         lb.position = __position + sf::Vector2f(5,__size.y*.05);
     }else{
@@ -46,19 +51,14 @@ void scrollContainer::addLabel(std::string name){
     }
     tmp = sf::Vector2f(name.length()*CharSize,__size.y*.9);;
     lb.labelName.setPosition(lb.position+sf::Vector2f(tmp.x*0,tmp.y*.125));
-    //lb.labelName.set
     lb.body.setPosition(lb.position);
     lb.body.setFillColor(sf::Color::Blue);
     lb.body.setSize(tmp);
-    //if (lb.body.getSize().x > 0)
-    //_max_scroll += lb.body.getSize().x;
     labelLenght += lb.body.getSize().x;
     if (__size.x < labelLenght)
         _max_scroll = labelLenght-__size.x;
 
     __labels.push_back(std::move(lb));
-    //labelButton* lbr = &__labels.at(__labels.size()-1);
-    //lbr->labelName.setFont(lbr->labelFont);
 }
 
 std::vector<scrollContainer::labelButton>& scrollContainer::getLabels(){
@@ -76,6 +76,10 @@ std::string scrollContainer::PressLabel(sf::Vector2f point){
     }
     return "";
 }
+bool scrollContainer::inside(sf::Vector2f point){
+    sf::FloatRect rect = __body.getGlobalBounds();
+    return rect.contains(point);
+}
 
 void scrollContainer::scroll(long double amm){
     if (_scroll+amm > _min_scroll-10 && _scroll+amm < _max_scroll+10)
@@ -91,6 +95,16 @@ void scrollContainer::updateBody(){
     __body.setFillColor(__color);
     __body.setPosition(__position);
     __body.setSize(__size);
+}
+void scrollContainer::updateLabels(){
+    unsigned int index = 0;
+    sf::Vector2f lastPos = __position;
+    for (labelButton lb : __labels){
+        lb.position = lastPos;
+        lastPos += lb.body.getSize();
+        lb.body.setPosition(lb.position);
+        lb.labelName.setPosition(lb.position);
+    }
 }
 
 void scrollContainer::draw(sf::RenderWindow& win){

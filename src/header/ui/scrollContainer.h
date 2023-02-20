@@ -37,6 +37,7 @@ private:
     sf::Color __color;
 
     void updateBody();
+    void updateLabels();
 
 public:
     scrollContainer();
@@ -45,10 +46,14 @@ public:
     void setColor(sf::Color);
     void setFont(fs::path);
 
+    void setPosition(float,float);
+    void setPosition(sf::Vector2f);
+
     void addLabel(std::string);
     std::vector<labelButton>& getLabels();
 
     std::string PressLabel(sf::Vector2f);
+    bool inside(sf::Vector2f);
 
     void draw(sf::RenderWindow&);
 
