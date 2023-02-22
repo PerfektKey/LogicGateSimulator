@@ -48,6 +48,7 @@ public:
 
     void setPosition(float,float);
     void setPosition(sf::Vector2f);
+    sf::Vector2f getPosition();
 
     void addLabel(std::string);
     std::vector<labelButton>& getLabels();

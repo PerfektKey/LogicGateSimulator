@@ -195,6 +195,14 @@ int main(){
     
     */
 
+   HScrollContainer tmpCon;
+
+   Label test;
+   test.setCharSize(48);
+   test.setString("test string");
+
+   tmpCon.addRef(&test);
+
     while(window.isOpen()){
         sf::Vector2f mouse_pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
 
@@ -211,15 +219,25 @@ int main(){
             }
             if (event.type == sf::Event::KeyPressed){
                 std::cout << "view info :\n\told:" << cam.getCenter() << "," << cam.getRotation() << "," << cam.getSize() << std::endl; 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                sf::Vector2f oldSCpos = SC.getPosition();
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
                     cam.move(0,-camSpeed.y);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                    oldSCpos.y -= camSpeed.y;
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
                     cam.move(0,camSpeed.y);
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+                    oldSCpos.y += camSpeed.y;
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)){
                     cam.move(-camSpeed.x,0);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                    oldSCpos.x -= camSpeed.x;
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)){
                     cam.move(camSpeed.x,0);
-                SC.setPosition(cam.getCenter() - sf::Vector2f(cam.getSize().x/2,cam.getSize().y/2-cam.getSize().y*.9));
+                    oldSCpos.x += camSpeed.x;
+                }
+                //SC.setPosition(cam.getCenter() - sf::Vector2f(cam.getSize().x/2,cam.getSize().y/2-cam.getSize().y*.9));
+                SC.setPosition(oldSCpos);
                 window.setView(cam);
 
                 std::cout << "\tnew:" << cam.getCenter() << "," << cam.getRotation() << "," << cam.getSize() << std::endl;
@@ -463,6 +481,7 @@ int main(){
         if (inProcessOfCreatingNewGate){
             cont.draw(window);
         }
+        tmpCon.draw(window);
         window.display();
 
         moveDGoldMousePosition = mouse_pos;

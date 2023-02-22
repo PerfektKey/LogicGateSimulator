@@ -29,6 +29,9 @@ void scrollContainer::setPosition(sf::Vector2f _p){
     __position = _p;
     updateLabels();
 }
+sf::Vector2f scrollContainer::getPosition(){
+    return __position;
+}
 
 void scrollContainer::addLabel(std::string name){
     labelButton lb;
@@ -101,7 +104,7 @@ void scrollContainer::updateLabels(){
     sf::Vector2f lastPos = __position;
     for (labelButton lb : __labels){
         lb.position = lastPos;
-        lastPos += lb.body.getSize();
+        lastPos.x += lb.body.getSize().x;
         lb.body.setPosition(lb.position);
         lb.labelName.setPosition(lb.position);
     }

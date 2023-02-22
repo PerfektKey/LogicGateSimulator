@@ -7,15 +7,23 @@
 class HScrollContainer : public BaseContainer{
 private:
     float scroll;
+    float min_scroll;
+    float max_scroll;
 
     virtual void updateRefs();
 public:
     HScrollContainer() = default;
 
-    void scroll(float);
+    //virtual void draw(const sf::RenderWindow&,bool=true);
+
+    virtual void addRef(UIBASE*);
+
+    virtual void setLocalPositionOfUI(UIBASE&,sf::Vector2f,piviot=UIBASE::LEFTTOP);
+    virtual void setRefsPosition();
+
+    void scrollH(float);
     void setScroll(float);
 
-    virtual void draw(const sf::RenderWindow&,bool=true);
 };
 
 #endif
